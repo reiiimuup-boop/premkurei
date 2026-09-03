@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reiistore - Full Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0b0f19;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1, h2, h3 { color: #f0f0f0; margin: 16px 0 12px; }
+        h1 { border-bottom: 2px solid #4ade80; padding-bottom: 8px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .card {
+            background: #1a1a2e;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #2d2d44;
+            transition: 0.2s;
+        }
+        .card:hover { border-color: #4ade80; }
+        .flex { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .price { color: #4ade80; font-weight: bold; }
+        .stock { font-size: 14px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+        .bg-green { background: #166534; color: #86efac; }
+        .bg-red { background: #7f1d1d; color: #fca5a5; }
+        .bg-yellow { background: #713f12; color: #fcd34d; }
+        input, select, textarea {
+            background: #0d1117;
+            border: 1px solid #2d2d44;
+            color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            width: 100%;
+            margin: 4px 0 10px;
+        }
+        button {
+            background: #4ade80;
+            color: #0b0f19;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { transform: scale(1.02); opacity: 0.9; }
+        .btn-danger { background: #ef4444; color: #fff; }
+        .btn-warning { background: #f59e0b; color: #0b0f19; }
+        .btn-secondary { background: #3b82f6; color: #fff; }
+        .mt-2 { margin-top: 12px; }
+        .mb-2 { margin-bottom: 12px; }
+        .border-t { border-top: 1px solid #2d2d44; padding-top: 20px; margin-top: 20px; }
+        .log-area {
+            background: #0d1117;
+            padding: 12px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            border: 1px solid #2d2d44;
+            margin-top: 8px;
+        }
+        .log-success { color: #4ade80; }
+        .log-error { color: #f87171; }
+        .log-info { color: #60a5fa; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>📦 Reiistore — Full API Dashboard</h1>
+
+    <!-- ===================== PROFILE ===================== -->
+    <div class="card">
+        <h3>👤 Profile</h3>
+        <div id="profileDisplay">Loading...</div>
+        <button onclick="loadProfile()" class="btn-secondary">↻ Refresh Profile</button>
+    </div>
+
+    <!-- ===================== PRODUK ===================== -->
+    <div class="card">
+        <h3>🛒 Daftar Produk</h3>
+        <div id="productsDisplay" class="grid">Loading...</div>
+        <button onclick="loadProducts()" class="btn-secondary mt-2">↻ Refresh Produk</button>
+    </div>
+
+    <!-- ===================== ORDER ===================== -->
+    <div class="card">
+        <h3>📝 Buat Order</h3>
+        <div class="two-col">
+            <div>
+                <label>Product ID</label>
+                <input type="number" id="orderProductId" placeholder="Contoh: 1">
+                <label>Jumlah (Qty)</label>
+                <input type="number" id="orderQty" value="1" min="1">
+                <label>Ref ID (unik)</label>
+                <input type="text" id="orderRefId" placeholder="INV-12345" value="ORDER-">
+            </div>
+            <div>
+                <button onclick="createOrder()" style="margin-top: 26px;">🚀 Order Sekarang</button>
+                <div id="orderResult" class="log-area" style="margin-top: 8px;">Hasil order akan muncul di sini.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== CEK STATUS ===================== -->
+    <div class="card">
+        <h3>🔍 Cek Status Order</h3>
+        <div class="two-col">
+            <div>
+                <label>Invoice</label>
+                <input type="text" id="statusInvoice" placeholder="Contoh: API-20260409194500-a1b2c3d4">
+            </div>
+            <div>
+                <button onclick="checkStatus()" style="margin-top: 26px;">🔎 Cek Status</button>
+                <div id="statusResult" class="log-area" style="margin-top: 8px;">Hasil status akan muncul di sini.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== DEPOSIT ===================== -->
+    <div class="card border-t">
+        <h3>💰 Deposit Saldo</h3>
+        <div class="two-col">
+            <div>
+                <label>Jumlah Deposit</label>
+                <input type="number" id="depositAmount" value="10000" min="1000">
+                <button onclick="createDeposit()">💳 Buat Deposit</button>
+                <div id="depositResult" class="log-area" style="margin-top: 8px;">Hasil deposit akan muncul di sini.</div>
+            </div>
+            <div>
+                <label>Cek Status Deposit (Invoice)</label>
+                <input type="text" id="depositStatusInvoice" placeholder="ORD123456">
+                <button onclick="checkDepositStatus()" class="btn-secondary">🔎 Cek Status Deposit</button>
+                <button onclick="cancelDeposit()" class="btn-danger" style="margin-top: 4px;">❌ Batalkan Deposit</button>
+                <div id="depositStatusResult" class="log-area" style="margin-top: 8px;">Hasil cek deposit di sini.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== ALIGHT MOTION TOOLS ===================== -->
+    <div class="card border-t">
+        <h3>🎬 Alight Motion Tools</h3>
+
+        <!-- AM Bulk -->
+        <div class="two-col">
+            <div>
+                <h4>Bulk Generate</h4>
+                <label>Jumlah (1-200)</label>
+                <input type="number" id="amBulkQty" value="1" min="1" max="200">
+                <label>Ref ID (opsional)</label>
+                <input type="text" id="amBulkRef" placeholder="AM-12345">
+                <button onclick="amBulk()">⚡ Generate Bulk</button>
+                <div id="amBulkResult" class="log-area" style="margin-top: 8px;">Hasil bulk generate...</div>
+            </div>
+            <div>
+                <h4>Single (Kirim Link)</h4>
+                <label>Email Target</label>
+                <input type="email" id="amSingleEmail" placeholder="user@example.com">
+                <button onclick="amSingle()">📨 Kirim Link</button>
+                <div id="amSingleResult" class="log-area" style="margin-top: 8px;">Hasil single link...</div>
+            </div>
+        </div>
+
+        <!-- AM Verify & Cancel -->
+        <div class="two-col" style="margin-top: 12px;">
+            <div>
+                <h4>Verify Single</h4>
+                <label>Invoice (dari single)</label>
+                <input type="text" id="amVerifyInvoice" placeholder="AM-SGL-2026...">
+                <label>Email</label>
+                <input type="email" id="amVerifyEmail" placeholder="user@example.com">
+                <label>Link (dari email)</label>
+                <input type="text" id="amVerifyLink" placeholder="https://alight.link/...">
+                <button onclick="amVerify()" class="btn-secondary">✅ Verify</button>
+                <div id="amVerifyResult" class="log-area" style="margin-top: 8px;">Hasil verify...</div>
+            </div>
+            <div>
+                <h4>Cancel Single</h4>
+                <label>Invoice (AM-SGL-...)</label>
+                <input type="text" id="amCancelInvoice" placeholder="AM-SGL-2026...">
+                <button onclick="amCancel()" class="btn-danger">❌ Cancel</button>
+                <div id="amCancelResult" class="log-area" style="margin-top: 8px;">Hasil cancel...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== LOG KONSOLE ===================== -->
+    <div class="card border-t">
+        <h3>📋 Console Log</h3>
+        <div id="consoleLog" class="log-area" style="max-height: 300px;">[System] Reiistore siap...</div>
+        <button onclick="document.getElementById('consoleLog').innerHTML = '[System] Cleared.'" class="btn-secondary mt-2">Clear Log</button>
+    </div>
+
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI
+    // ============================================================
+    const API_KEY = '2065ac348cba872352cf247e1da11ae9'; // GANTI DENGAN API KEY-MU
+    const BASE_URL = 'https://premku.com/api';
+
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+    function log(msg, type = 'info') {
+        const el = document.getElementById('consoleLog');
+        const color = type === 'success' ? 'log-success' : type === 'error' ? 'log-error' : 'log-info';
+        const time = new Date().toLocaleTimeString('id-ID');
+        el.innerHTML += `<div class="${color}">[${time}] ${msg}</div>`;
+        el.scrollTop = el.scrollHeight;
+    }
+
+    async function callAPI(endpoint, data) {
+        try {
+            const res = await fetch(`${BASE_URL}/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...data, api_key: API_KEY })
+            });
+            const json = await res.json();
+            log(`[${endpoint}] → ${res.status} ${json.success ? '✅' : '❌'}`, json.success ? 'success' : 'error');
+            return json;
+        } catch (e) {
+            log(`[${endpoint}] Error: ${e.message}`, 'error');
+            return { success: false, message: `Network error: ${e.message}` };
+        }
+    }
+
+    function setResult(id, html) {
+        document.getElementById(id).innerHTML = html;
+    }
+
+    function getVal(id) { return document.getElementById(id).value.trim(); }
+
+    // ============================================================
+    // 1. PROFILE
+    // ============================================================
+    async function loadProfile() {
+        const result = await callAPI('profile', {});
+        const el = document.getElementById('profileDisplay');
+        if (result.success) {
+            el.innerHTML = `
+                <div class="flex">
+                    <span>👤 <b>${result.data.username}</b></span>
+                    <span>💰 Saldo: <span class="price">Rp ${result.data.saldo.toLocaleString()}</span></span>
+                    <span>📱 WA: ${result.data.whatsapp}</span>
+                    <span>📅 Bergabung: ${result.data.registered_at}</span>
+                </div>
+            `;
+            log(`Profile loaded: ${result.data.username} (Saldo: Rp ${result.data.saldo})`, 'success');
+        } else {
+            el.innerHTML = `❌ Gagal: ${result.message}`;
+            log(`Profile error: ${result.message}`, 'error');
+        }
+    }
+
+    // ============================================================
+    // 2. PRODUCTS
+    // ============================================================
+    async function loadProducts() {
+        const result = await callAPI('products', {});
+        const el = document.getElementById('productsDisplay');
+        if (result.success) {
+            el.innerHTML = result.products.map(p => `
+                <div class="card">
+                    <strong>${p.name}</strong><br>
+                    <span class="price">Rp ${p.price.toLocaleString()}</span><br>
+                    <span class="stock">Stok: ${p.stock} ${p.status === 'available' ? '✅' : '❌'}</span><br>
+                    ${p.image ? `<img src="${p.image}" style="max-width:100%;height:auto;max-height:80px;margin:4px 0;" />` : ''}
+                    <button onclick="quickOrder(${p.id}, '${p.name}', ${p.price})" style="margin-top:6px;">Beli</button>
+                </div>
+            `).join('');
+            log(`Products loaded: ${result.products.length} produk`, 'success');
+        } else {
+            el.innerHTML = `❌ Gagal: ${result.message}`;
+            log(`Products error: ${result.message}`, 'error');
+        }
+    }
+
+    // ============================================================
+    // 3. ORDER
+    // ============================================================
+    async function createOrder() {
+        const product_id = parseInt(getVal('orderProductId'));
+        const qty = parseInt(getVal('orderQty')) || 1;
+        const ref_id = getVal('orderRefId') || `ORDER-${Date.now()}`;
+
+        if (!product_id) { setResult('orderResult', '❌ Product ID wajib diisi.'); return; }
+
+        const result = await callAPI('order', { product_id, qty, ref_id });
+        if (result.success) {
+            setResult('orderResult', `
+                ✅ Order berhasil!<br>
+                Invoice: <b>${result.invoice}</b><br>
+                Produk: ${result.product}<br>
+                Total: Rp ${result.total.toLocaleString()}<br>
+                Sisa Saldo: Rp ${result.balance_after.toLocaleString()}
+            `);
+            log(`Order sukses: ${result.invoice} - ${result.product} (${qty})`, 'success');
+            loadProfile();
+        } else {
+            setResult('orderResult', `❌ Gagal: ${result.message}`);
+            log(`Order error: ${result.message}`, 'error');
+        }
+    }
+
+    // Quick order dari produk
+    async function quickOrder(id, name, price) {
+        const qty = prompt(`Jumlah ${name} (Rp ${price.toLocaleString()}/unit)?`, 1);
+        if (!qty) return;
+        document.getElementById('orderProductId').value = id;
+        document.getElementById('orderQty').value = qty;
+        document.getElementById('orderRefId').value = `ORDER-${Date.now()}`;
+        createOrder();
+    }
+
+    // ============================================================
+    // 4. CEK STATUS
+    // ============================================================
+    async function checkStatus() {
+        const invoice = getVal('statusInvoice');
+        if (!invoice) { setResult('statusResult', '❌ Invoice wajib diisi.'); return; }
+
+        const result = await callAPI('status', { invoice });
+        if (result.success) {
+            let accountsHtml = '';
+            if (result.accounts && result.accounts.length) {
+                accountsHtml = result.accounts.map(a => 
+                    `📧 ${a.username} | 🔑 ${a.password}`
+                ).join('<br>');
+            }
+            setResult('statusResult', `
+                ✅ Status: <b>${result.status}</b><br>
+                Produk: ${result.product}<br>
+                Invoice: ${result.invoice}<br>
+                ${accountsHtml ? '📋 Akun:<br>' + accountsHtml : '⏳ Belum ada akun (masih pending)'}
+            `);
+            log(`Status check: ${result.invoice} → ${result.status}`, 'success');
+        } else {
+            setResult('statusResult', `❌ Gagal: ${result.message}`);
+            log(`Status error: ${result.message}`, 'error');
+        }
+    }
+
+    // ============================================================
+    // 5. DEPOSIT
+    // ============================================================
+    async function createDeposit() {
+        const amount = parseInt(getVal('depositAmount'));
+        if (!amount || amount < 1000) { setResult('depositResult', '❌ Minimal deposit Rp 1.000'); return; }
+
+        const result = await callAPI('pay', { amount });
+        if (result.success) {
+            const d = result.data;
+            setResult('depositResult', `
+                ✅ Deposit dibuat!<br>
+                Invoice: <b>${d.invoice}</b><br>
+                Total Bayar: Rp ${d.total_bayar.toLocaleString()}<br>
+                QR Code: ${d.qr_image ? '✅ (gambar tersedia)' : '❌ tidak ada'}<br>
+                <img src="${d.qr_image}" style="max-width:200px;margin:8px 0;border:1px solid #333;border-radius:8px;" /><br>
+                <span style="font-size:12px;">${d.expired_in}</span>
+            `);
+            log(`Deposit created: ${d.invoice} - Rp ${d.total_bayar}`, 'success');
+        } else {
+            setResult('depositResult', `❌ Gagal: ${result.message}`);
+            log(`Deposit error: ${result.message}`, 'error');
+        }
+    }
+
+    async function checkDepositStatus() {
+        const invoice = getVal('depositStatusInvoice');
+        if (!invoice) { setResult('depositStatusResult', '❌ Invoice deposit wajib diisi.'); return; }
+
+        const result = await callAPI('pay_status', { invoice });
+        if (result.success) {
+            const d = result.data;
+            setResult('depositStatusResult', `
+                Invoice: <b>${d.invoice}</b><br>
+                Status: <span class="badge ${d.status === 'success' ? 'bg-green' : d.status === 'pending' ? 'bg-yellow' : 'bg-red'}">${d.status}</span><br>
+                Total: Rp ${d.total_bayar ? d.total_bayar.toLocaleString() : 'N/A'}<br>
+                ${d.qr_raw ? 'QR Raw tersedia' : 'Tidak ada QR'}
+            `);
+            log(`Deposit status: ${d.invoice} → ${d.status}`, 'success');
+        } else {
+            setResult('depositStatusResult', `❌ Gagal: ${result.message}`);
+            log(`Deposit status error: ${result.message}`, 'error');
+        }
+    }
+
+    async function cancelDeposit() {
+        const invoice = getVal('depositStatusInvoice');
+        if (!invoice) { setResult('depositStatusResult', '❌ Invoice deposit wajib diisi.'); return; }
+        if (!confirm(`Batalkan deposit ${invoice}?`)) return;
+
+        const result = await callAPI('cancel_pay', { invoice });
+        if (result.success) {
+            setResult('depositStatusResult', `
+                ✅ ${result.message}<br>
+                Status lama: ${result.data.status_old}<br>
+                Status baru: ${result.data.status_new}
+            `);
+            log(`Deposit cancelled: ${invoice}`, 'success');
+        } else {
+            setResult('depositStatusResult', `❌ Gagal: ${result.message}`);
+            log(`Cancel deposit error: ${result.message}`, 'error');
+        }
+    }
+
+    // ============================================================
+    // 6. ALIGHT MOTION TOOLS
+    // ============================================================
+    // 6a. Bulk
+    async function amBulk() {
+        const qty = parseInt(getVal('amBulkQty')) || 1;
+        const ref_id = getVal('amBulkRef') || `AM-${Date.now()}`;
+        if (qty < 1 || qty > 200) { setResult('amBulkResult', '❌ Qty harus 1-200'); return; }
+
+        const result = await callAPI('am', { action: 'buy_bulk', qty, ref_id });
+        if (result.success) {
+            const accounts = result.data.map(a => `📧 ${a.email} | 🔗 ${a.link}`).join('<br>');
+            setResult('amBulkResult', `
+                ✅ ${result.message}<br>
+                Invoice: <b>${result.invoice}</b><br>
+                ${accounts}
+            `);
+            log(`AM Bulk: ${result.invoice} - ${qty} akun`, 'success');
+            loadProfile();
+        } else {
+            setResult('amBulkResult', `❌ Gagal: ${result.message}`);
+            log(`AM Bulk error: ${result.message}`, 'error');
+        }
+    }
+
+    // 6b. Single (Kirim Link)
+    async function amSingle() {
+        const email = getVal('amSingleEmail');
+        if (!email) { setResult('amSingleResult', '❌ Email wajib diisi.'); return; }
+
+        const result = await callAPI('am', { action: 'buy_single', email });
+        if (result.success) {
+            setResult('amSi
