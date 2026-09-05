@@ -1,128 +1,375 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>REII API HUB</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReiiOFC - Developer API Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            brand: {
+              500: '#10b981',
+              600: '#059669',
+              glow: 'rgba(16, 185, 129, 0.15)'
+            }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    :root{--bg:#0f1720;--card:#18222e;--line:#2a3a4a;--text:#eef5fb;--muted:#94a3b8;--accent:#27a8e0}
-    *{box-sizing:border-box} body{margin:0;font-family:system-ui,Arial;background:linear-gradient(135deg,#0b1118,#111b27);color:var(--text)}
-    .app{max-width:980px;margin:auto;padding:20px}.head{padding:22px 0}.head h1{margin:0;font-size:28px}.head p{color:var(--muted);margin:8px 0 0}
-    .card{background:rgba(24,34,46,.96);border:1px solid var(--line);border-radius:18px;padding:16px;margin:14px 0}
-    label{display:block;margin:10px 0 6px;font-size:13px;color:var(--muted)}
-    select,input,textarea,button{width:100%;border-radius:12px;font:inherit}
-    select,input,textarea{background:#0d141d;color:#fff;border:1px solid var(--line);padding:12px}
-    textarea{min-height:140px;resize:vertical;font-family:ui-monospace,monospace}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.method{font-weight:700;color:#7dd3fc}
-    button{margin-top:14px;padding:13px;border:0;background:var(--accent);color:#fff;font-weight:800;cursor:pointer}
-    button:disabled{opacity:.6}.status{margin-top:14px;color:var(--muted)}pre{white-space:pre-wrap;word-break:break-word;background:#080d13;border:1px solid var(--line);padding:14px;border-radius:12px;min-height:180px;overflow:auto}
-    .tag{display:inline-block;background:#163447;color:#7dd3fc;padding:5px 9px;border-radius:999px;font-size:12px;margin:4px}
-    @media(max-width:640px){.row{grid-template-columns:1fr}.app{padding:14px}}
+    body {
+      background-color: #07090e;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #10b981; }
   </style>
 </head>
-<body>
-<div class="app">
-  <header class="head">
-    <h1>REII API HUB</h1>
-    <p>Client API untuk endpoint yang diizinkan. API key tetap disimpan di Vercel Environment Variables.</p>
+<body class="min-h-screen text-slate-100 flex flex-col font-sans antialiased">
+
+  <!-- Top Navigation -->
+  <header class="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold font-mono text-lg">
+          &gt;_
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+            ReiiOFC <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">v1.3.3</span>
+          </h1>
+          <p class="text-[11px] text-slate-400">Multi-Purpose API Dashboard</p>
+        </div>
+      </div>
+
+      <!-- Base URL Configurator -->
+      <div class="flex items-center gap-2 w-full md:w-auto bg-slate-900/90 border border-slate-800 p-1.5 rounded-xl">
+        <span class="text-[11px] font-mono text-slate-400 pl-2 hidden sm:inline">HOST:</span>
+        <input type="text" id="base-url-input" placeholder="https://api.kyzznekoo.my.id" 
+          class="bg-slate-950 text-xs font-mono text-slate-200 px-3 py-1.5 rounded-lg border border-slate-800 focus:outline-none focus:border-emerald-500 w-full md:w-60">
+        <button onclick="saveBaseUrl()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg transition whitespace-nowrap">
+          Konek
+        </button>
+      </div>
+
+    </div>
   </header>
 
-  <section class="card">
-    <div class="row">
-      <div><label>Endpoint</label><select id="endpoint"></select></div>
-      <div><label>Method</label><input id="method" class="method" readonly></div>
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
+
+    <!-- Hero & Mode Switcher -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800/60 pb-5">
+      <div>
+        <h2 class="text-2xl font-extrabold text-white">Pilih Layanan API</h2>
+        <p class="text-xs text-slate-400">Gunakan generator Alight Motion khusus atau jelajahi endpoint umum lainnya.</p>
+      </div>
+      
+      <!-- Nav Tabs -->
+      <div class="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+        <button id="tab-alight" onclick="switchTab('alight')" class="px-4 py-2 rounded-lg text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition">
+          ⚡ Alight Motion Special
+        </button>
+        <button id="tab-explorer" onclick="switchTab('explorer')" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
+          📦 Endpoint Explorer
+        </button>
+      </div>
     </div>
-    <label>Parameter JSON</label>
-    <textarea id="params">{}</textarea>
-    <button id="send">KIRIM REQUEST</button>
-    <div class="status" id="status">Siap.</div>
-    <pre id="out">Response akan muncul di sini.</pre>
-  </section>
 
-  <section class="card">
-    <b>Endpoint yang tersedia di proyek ini</b>
-    <div id="tags"></div>
-  </section>
-</div>
+    <!-- VIEW 1: ALIGHT MOTION SPECIAL TOOL -->
+    <section id="view-alight" class="max-w-xl mx-auto bg-slate-900/80 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 shadow-2xl space-y-5">
+      <div class="text-center space-y-1">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Alight Motion v3 Activation
+        </div>
+        <h3 class="text-xl font-extrabold text-white">Aktivasi Akun Premium</h3>
+        <p class="text-xs text-slate-400">Proses otomatis magic link & verifikasi akun</p>
+      </div>
 
-<script>
-const endpoints = [
-  // AI
-  ["GET","/api/ai/kyzzneko"],["GET","/api/ai/chatgpt"],["GET","/api/ai/gptanon"],
-  ["GET","/api/ai/copilot-think"],["GET","/api/ai/microsoft"],["GET","/api/ai/glm"],
-  ["GET","/api/ai/unlimited"],["GET","/api/ai/google"],["GET","/api/ai/qwen"],
-  ["GET","/api/ai/deepseek"],["GET","/api/ai/cici"],["GET","/api/ai/gemini"],
-  ["GET","/api/ai/gemini-lite"],["GET","/api/ai/vanice"],["GET","/api/ai/gpt5"],
+      <!-- Step 1 -->
+      <div class="space-y-2">
+        <label for="am-email" class="block text-xs font-semibold text-slate-300">1. Alamat Email Alight Motion</label>
+        <input type="email" id="am-email" placeholder="nama@gmail.com" 
+          class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
+        <button onclick="requestMagicLink()" id="btn-magic" 
+          class="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-slate-950 font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/10">
+          Kirim Magic Link
+        </button>
+      </div>
 
-  // Anime
-  ["GET","/api/anime/quotes"],["GET","/api/anime/otakudesu"],
-  ["GET","/api/anime/animekita/anime-list"],["GET","/api/anime/animekita/movie"],
-  ["GET","/api/anime/animekita/schedule"],["GET","/api/anime/animekita/new"],
-  ["GET","/api/anime/animekita/genre"],["GET","/api/anime/animekita/search"],
-  ["GET","/api/anime/animekita/detail"],["GET","/api/anime/animekita/episode"],
-  ["GET","/api/anime/v2/anichin/search"],["GET","/api/anime/v2/anichin/popular"],
-  ["GET","/api/anime/v2/anichin/latest"],["GET","/api/anime/v2/anichin/detail"],
-  ["GET","/api/anime/v2/anichin/episode"],["GET","/api/anime/v2/anichin/download"],
-  ["GET","/api/anime/v2/otakudesu/ongoing"],["GET","/api/anime/v2/otakudesu/search"],
-  ["GET","/api/anime/v2/otakudesu/detail"],["GET","/api/anime/v2/otakudesu/download"],
-  ["GET","/api/anime/v2/oploverz/ongoing"],["GET","/api/anime/v2/oploverz/search"],
-  ["GET","/api/anime/v2/oploverz/episode"],["GET","/api/anime/v2/oploverz/download"],
-  ["GET","/api/anime/v2/komikindo/ongoing"],["GET","/api/anime/v2/komikindo/search"],
-  ["GET","/api/anime/v2/komikindo/detail"],["GET","/api/anime/v2/komikindo/download"],
-  ["GET","/api/anime/v2/samehadaku/latest"],["GET","/api/anime/v2/samehadaku/release"],
-  ["GET","/api/anime/v2/samehadaku/search"],["GET","/api/anime/v2/samehadaku/detail"],
-  ["GET","/api/anime/v2/samehadaku/episode"],["GET","/api/anime/v2/samehadaku/download"],
+      <!-- Step 2 -->
+      <div class="space-y-2 pt-3 border-t border-slate-800/80">
+        <label for="am-link" class="block text-xs font-semibold text-slate-300">2. URL Link Verifikasi (Salin dari Email)</label>
+        <input type="url" id="am-link" placeholder="https://alight-creative.firebaseapp.com/__/auth/..." 
+          class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500">
+        <button onclick="verifyLink()" id="btn-verif" 
+          class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-blue-600/10">
+          Verifikasi & Aktifkan Premium
+        </button>
+      </div>
+    </section>
 
-  // Image / maker
-  ["GET","/api/image/uhd"],["GET","/api/image/brat"],["GET","/api/maker/balogo"],
-  ["GET","/api/image/codesnap"],["GET","/api/image/bratv"],["GET","/api/image/iqc"],
-  ["GET","/api/image/story-ig"],["GET","/api/image/sertifikat"],["GET","/api/image/quoteimg"],
-  ["GET","/api/canvas/fakewa"],["GET","/api/canvas/fakecall"],["GET","/api/canvas/fake-ovo"],
+    <!-- VIEW 2: ALL ENDPOINTS EXPLORER -->
+    <section id="view-explorer" class="hidden space-y-4">
+      <div class="flex items-center gap-3 bg-slate-900/80 border border-slate-800 p-3 rounded-2xl">
+        <svg class="w-5 h-5 text-slate-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input type="text" id="search-input" oninput="filterEndpoints()" placeholder="Cari endpoint (misal: anime, stalk, tools, generator)..." 
+          class="bg-transparent text-sm w-full text-slate-100 placeholder-slate-500 focus:outline-none">
+      </div>
 
-  // General
-  ["GET","/api/about"],["GET","/api/cdn/crcdn"],["GET","/api/cdn/logsadm"],
-  ["GET","/api/admin/listapi"],["GET","/api/assets/key"],
+      <!-- Container Kartu Endpoint (Akan Terisi Otomatis dari /api/docs) -->
+      <div id="endpoint-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Loading State Default -->
+        <div class="col-span-full text-center py-12 text-slate-500 text-sm font-mono">
+          Tekan tombol "Konek" di atas untuk mengambil daftar endpoint dari server...
+        </div>
+      </div>
+    </section>
 
-  // Safe utilities
-  ["GET","/api/tools/getpp"],["GET","/api/tools/ip"],["GET","/api/tools/osint"],
-  ["GET","/api/tools/sc_ml"],["GET","/api/tools/tmail/inbox"],
-  ["GET","/api/tools/tmail/v2/create"],["GET","/api/tools/tmail/v2/inbox"],
-  ["GET","/api/tools/rbg"],["GET","/api/tools/snapotp"],["GET","/api/tools/removevokal"],
-  ["GET","/api/tools/v2/ssweb"],["GET","/api/tools/ssweb"],["GET","/api/tools/tempmailv2"],
-  ["GET","/api/tools/obfuscate"],["GET","/api/tools/v2/qr"],
+    <!-- SYSTEM CONSOLE / TERMINAL (Selalu Ada di Bawah) -->
+    <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 space-y-2 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Live Terminal Console</span>
+        </div>
+        <button onclick="clearLog()" class="text-[10px] text-slate-500 hover:text-slate-300 font-mono">Clear Log</button>
+      </div>
+      
+      <div id="console-log" class="font-mono text-xs text-emerald-400 min-h-[120px] max-h-[180px] overflow-y-auto space-y-1 pt-1 leading-relaxed">
+        <p class="text-slate-500">[System Ready] Pilih fitur di atas atau hubungkan Base URL untuk memulai...</p>
+      </div>
+    </div>
 
-  // AlightMotion basic download/init only
-  ["GET","/api/alightmotion/download"],["GET","/api/alightmotion/v4/init"],
-  ["GET","/api/alightmotion/v3/magic-link"],["GET","/api/alightmotion/v1/magic-link"],
-  ["GET","/api/alightmotion/v2/magic-link"]
-];
+  </main>
 
-const endpointSel=document.getElementById("endpoint");
-const method=document.getElementById("method");
-const tags=document.getElementById("tags");
-endpoints.forEach(([m,p])=>{
-  const o=document.createElement("option");o.value=p;o.dataset.method=m;o.textContent=`${m} ${p}`;endpointSel.appendChild(o);
-  const t=document.createElement("span");t.className="tag";t.textContent=`${m} ${p}`;tags.appendChild(t);
-});
-function sync(){method.value=endpointSel.selectedOptions[0].dataset.method}
-endpointSel.onchange=sync;sync();
+  <footer class="border-t border-slate-800/80 py-4 text-center text-[11px] text-slate-500">
+    Developer API Dashboard &copy; ReiiOFC - Powering Next Generation Web Tools
+  </footer>
 
-document.getElementById("send").onclick=async()=>{
-  const btn=document.getElementById("send"),out=document.getElementById("out"),status=document.getElementById("status");
-  let params={};
-  try{params=JSON.parse(document.getElementById("params").value||"{}")}catch(e){status.textContent="JSON parameter tidak valid.";return}
-  btn.disabled=true;status.textContent="Mengirim request...";
-  try{
-    const r=await fetch("/api/proxy",{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({endpoint:endpointSel.value,method:method.value,params})
-    });
-    const text=await r.text();
-    try{out.textContent=JSON.stringify(JSON.parse(text),null,2)}catch{out.textContent=text}
-    status.textContent=`Selesai (${r.status}).`;
-  }catch(e){out.textContent=String(e);status.textContent="Request gagal."}
-  btn.disabled=false;
-};
-</script>
+  <!-- SCRIPT UTAMA -->
+  <script>
+    let BASE_API = 'https://api.kyzznekoo.my.id';
+    let docsData = null;
+
+    // --- SYSTEM CONSOLE LOGGING ---
+    function log(msg, type = 'info') {
+      const consoleLog = document.getElementById('console-log');
+      const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
+      let colorClass = 'text-emerald-400';
+      if (type === 'error') colorClass = 'text-rose-400';
+      if (type === 'warn') colorClass = 'text-amber-400';
+
+      const p = document.createElement('p');
+      p.className = `${colorClass} break-all`;
+      p.innerHTML = `<span class="text-slate-500">[${time}]</span> ${msg}`;
+      consoleLog.appendChild(p);
+      consoleLog.scrollTop = consoleLog.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('console-log').innerHTML = '<p class="text-slate-500">[System Cleared]</p>';
+    }
+
+    // --- BASE URL MANAGEMENT ---
+    function saveBaseUrl() {
+      const input = document.getElementById('base-url-input').value.trim();
+      if (!input) return;
+      
+      BASE_API = input.replace(/\/+$/, '');
+      localStorage.setItem('reii_base_url', BASE_API);
+      log(`Base URL berhasil diubah ke: ${BASE_API}`);
+      fetchApiDocs();
+    }
+
+    // --- TAB SWITCHER ---
+    function switchTab(tab) {
+      const vAlight = document.getElementById('view-alight');
+      const vExplorer = document.getElementById('view-explorer');
+      const btnAlight = document.getElementById('tab-alight');
+      const btnExplorer = document.getElementById('tab-explorer');
+
+      if (tab === 'alight') {
+        vAlight.classList.remove('hidden');
+        vExplorer.classList.add('hidden');
+        btnAlight.className = "px-4 py-2 rounded-lg text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition";
+        btnExplorer.className = "px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
+      } else {
+        vAlight.classList.add('hidden');
+        vExplorer.classList.remove('hidden');
+        btnExplorer.className = "px-4 py-2 rounded-lg text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition";
+        btnAlight.className = "px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
+        if (!docsData) fetchApiDocs();
+      }
+    }
+
+    // --- FETCH DOCS ENDPOINTS AUTOMATICALLY ---
+    async function fetchApiDocs() {
+      log(`Mencoba mengambil dokumentasi dari: ${BASE_API}/api/docs ...`);
+      try {
+        let response;
+        const targetUrl = `${BASE_API}/api/docs`;
+        try {
+          response = await fetch(targetUrl);
+        } catch (e) {
+          log('Kena blokir CORS, mencoba via Proxy...', 'warn');
+          response = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
+        }
+
+        docsData = await response.json();
+        log('Dokumentasi API berhasil dimuat!', 'info');
+        renderExplorer(docsData);
+
+      } catch (err) {
+        log(`Gagal memuat /api/docs: ${err.message}`, 'error');
+      }
+    }
+
+    // --- RENDER GRID ENDPOINTS ---
+    function renderExplorer(data) {
+      const grid = document.getElementById('endpoint-grid');
+      grid.innerHTML = '';
+
+      const keys = Object.keys(data).filter(k => Array.isArray(data[k]));
+
+      keys.forEach(category => {
+        const endpoints = data[category];
+        const card = document.createElement('div');
+        card.className = "bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-3";
+
+        let endpointListHtml = endpoints.map(ep => 
+          `<div class="flex items-center justify-between text-xs font-mono bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800/80">
+            <span class="truncate text-slate-300">${ep}</span>
+            <button onclick="testEndpoint('${ep}')" class="text-[10px] bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-bold px-2 py-0.5 rounded transition ml-2">GET</button>
+          </div>`
+        ).join('');
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+              <h4 class="font-bold text-sm text-slate-100 capitalize">${category}</h4>
+              <span class="text-[10px] font-mono text-slate-500">${endpoints.length} API</span>
+            </div>
+            <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+              ${endpointListHtml}
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // --- TEST ANY ENDPOINT ---
+    async function testEndpoint(endpoint) {
+      log(`Eksekusi GET: ${BASE_API}${endpoint} ...`);
+      try {
+        const targetUrl = `${BASE_API}${endpoint}`;
+        let res;
+        try {
+          res = await fetch(targetUrl);
+        } catch (e) {
+          res = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
+        }
+        const json = await res.json();
+        log(`RESPONSE STATUS [${res.status}]:\n` + JSON.stringify(json, null, 2), 'info');
+      } catch (err) {
+        log(`EKSEKUSI GAGAL: ${err.message}`, 'error');
+      }
+    }
+
+    // --- ALIGHT MOTION LOGIC ---
+    async function requestMagicLink() {
+      const email = document.getElementById('am-email').value.trim();
+      if (!email) return log('Error: Masukkan email terlebih dahulu!', 'error');
+
+      const btn = document.getElementById('btn-magic');
+      btn.disabled = true;
+      btn.innerText = 'Mengirim...';
+      log(`Mengirim Magic Link ke: ${email}...`);
+
+      try {
+        const targetUrl = `${BASE_API}/api/alightmotion/v3/magic-link?email=${encodeURIComponent(email)}`;
+        let response;
+        try {
+          response = await fetch(targetUrl);
+        } catch (e) {
+          response = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
+        }
+        const data = await response.json();
+
+        if (data.status) {
+          log('BERHASIL: Magic link dikirim ke inbox/spam email Anda!', 'info');
+        } else {
+          log(`Gagal: ${data.message || 'Gagal mengirim magic link.'}`, 'error');
+        }
+      } catch (err) {
+        log(`Error: ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Kirim Magic Link';
+      }
+    }
+
+    async function verifyLink() {
+      const email = document.getElementById('am-email').value.trim();
+      const verifyUrl = document.getElementById('am-link').value.trim();
+
+      if (!email || !verifyUrl) return log('Error: Email dan URL Link Wajib diisi!', 'error');
+
+      const btn = document.getElementById('btn-verif');
+      btn.disabled = true;
+      btn.innerText = 'Memverifikasi...';
+      log('Proses aktivasi premium...');
+
+      try {
+        const targetUrl = `${BASE_API}/api/alightmotion/v3/applyPremium?email=${encodeURIComponent(email)}&link=${encodeURIComponent(verifyUrl)}`;
+        let response;
+        try {
+          response = await fetch(targetUrl);
+        } catch (e) {
+          response = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
+        }
+        const data = await response.json();
+
+        if (data.status) {
+          log('BERHASIL! Status Akun Premium Alight Motion telah Aktif.', 'info');
+        } else {
+          log(`Gagal Verifikasi: ${data.message || 'Link tidak valid.'}`, 'error');
+        }
+      } catch (err) {
+        log(`Error: ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Verifikasi & Aktifkan Premium';
+      }
+    }
+
+    // --- INIT APP ---
+    (function init() {
+      const savedUrl = localStorage.getItem('reii_base_url');
+      if (savedUrl) {
+        BASE_API = savedUrl;
+        document.getElementById('base-url-input').value = savedUrl;
+      } else {
+        document.getElementById('base-url-input').value = BASE_API;
+      }
+    })();
+  </script>
 </body>
 </html>
