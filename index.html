@@ -3,431 +3,226 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReiiOFC - Developer API Hub</title>
+  <title>ReiiOFC - Multi-Purpose API Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['Fira Code', 'monospace'],
-          }
-        }
-      }
-    }
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], mono: ['Fira Code', 'monospace'] } } } }
   </script>
   <style>
-    body {
-      background-color: #07090e;
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
-    }
+    body { background-color: #07090e; background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%); }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #10b981; }
   </style>
 </head>
 <body class="min-h-screen text-slate-100 flex flex-col font-sans antialiased">
 
-  <!-- ==================== HALAMAN LOGIN ==================== -->
   <div id="login-screen" class="fixed inset-0 z-50 bg-[#07090e] flex items-center justify-center p-4">
     <div class="w-full max-w-sm bg-slate-900/90 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 shadow-2xl space-y-5">
       <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold font-mono text-xl mx-auto">
-          &gt;_
-        </div>
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold font-mono text-xl mx-auto">&gt;_</div>
         <h2 class="text-2xl font-extrabold text-white">Login Hub API</h2>
-        <p class="text-xs text-slate-400">Masukkan lisensi / kredensial untuk mengakses dashboard</p>
+        <p class="text-xs text-slate-400">Masukkan lisensi untuk mengakses dashboard</p>
       </div>
-
       <form onsubmit="handleLogin(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">Username</label>
-          <input type="text" id="login-user" placeholder="Masukkan username" required
-            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+          <input type="text" id="login-user" placeholder="Masukkan username" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Access Key / Password</label>
-          <input type="password" id="login-pass" placeholder="••••••••" required
-            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
         </div>
         <p id="login-error" class="text-xs text-rose-400 hidden text-center">Username atau Password salah!</p>
-        <button type="submit" 
-          class="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-slate-950 font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
-          Masuk ke Dashboard
-        </button>
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">Masuk ke Dashboard</button>
       </form>
-      <p class="text-[10px] text-slate-600 text-center">Default: user = reii | pass = reii123</p>
     </div>
   </div>
 
-  <!-- ==================== DASHBOARD UTAMA ==================== -->
   <div id="main-dashboard" class="hidden min-h-screen flex flex-col">
-    <!-- Top Navigation -->
     <header class="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
-        
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold font-mono text-lg">
-            &gt;_
-          </div>
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold font-mono text-lg">&gt;_</div>
           <div>
-            <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-              ReiiOFC <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">v1.3.3</span>
-            </h1>
-            <p class="text-[11px] text-slate-400">Multi-Purpose API Dashboard</p>
+            <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">ReiiOFC <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">v1.3.3</span></h1>
           </div>
         </div>
-
-        <!-- Base URL Configurator & Logout -->
         <div class="flex items-center gap-2 w-full md:w-auto">
-          <div class="flex items-center gap-2 w-full md:w-auto bg-slate-900/90 border border-slate-800 p-1.5 rounded-xl">
-            <span class="text-[11px] font-mono text-slate-400 pl-2 hidden sm:inline">HOST:</span>
-            <input type="text" id="base-url-input" placeholder="https://api.kyzznekoo.my.id" 
-              class="bg-slate-950 text-xs font-mono text-slate-200 px-3 py-1.5 rounded-lg border border-slate-800 focus:outline-none focus:border-emerald-500 w-full md:w-60">
-            <button onclick="saveBaseUrl()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg transition whitespace-nowrap">
-              Konek
-            </button>
-          </div>
-          <button onclick="handleLogout()" class="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 text-xs font-bold px-3 py-2.5 rounded-xl transition">
-            Keluar
-          </button>
+          <input type="text" id="base-url-input" placeholder="https://api.kyzznekoo.my.id" class="bg-slate-950 text-xs font-mono text-slate-200 px-3 py-1.5 rounded-lg border border-slate-800 w-full md:w-60">
+          <button onclick="saveBaseUrl()" class="bg-emerald-500 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg">Konek</button>
+          <button onclick="handleLogout()" class="bg-rose-500/10 text-rose-400 text-xs font-bold px-3 py-1.5 rounded-lg">Keluar</button>
         </div>
-
       </div>
     </header>
 
-    <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
-
-      <!-- Hero & Mode Switcher -->
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800/60 pb-5">
-        <div>
-          <h2 class="text-2xl font-extrabold text-white">Selamat Datang, <span id="user-display" class="text-emerald-400">User</span></h2>
-          <p class="text-xs text-slate-400">Gunakan generator Alight Motion khusus atau jelajahi endpoint umum lainnya.</p>
-        </div>
-        
-        <!-- Nav Tabs -->
-        <div class="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800">
-          <button id="tab-alight" onclick="switchTab('alight')" class="px-4 py-2 rounded-lg text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition">
-            ⚡ Alight Motion Special
-          </button>
-          <button id="tab-explorer" onclick="switchTab('explorer')" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
-            📦 Endpoint Explorer
-          </button>
-        </div>
+      <div class="flex flex-wrap gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+        <button id="tab-alight" onclick="switchTab('alight')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 bg-emerald-500/10">⚡ Alight Motion</button>
+        <button id="tab-ai" onclick="switchTab('ai')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400">🤖 AI Chat</button>
+        <button id="tab-stalk" onclick="switchTab('stalk')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400">🔍 Stalker</button>
+        <button id="tab-maker" onclick="switchTab('maker')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400">🎨 Maker</button>
+        <button id="tab-explorer" onclick="switchTab('explorer')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400">📦 All Endpoints</button>
       </div>
 
-      <!-- VIEW 1: ALIGHT MOTION SPECIAL TOOL -->
-      <section id="view-alight" class="max-w-xl mx-auto bg-slate-900/80 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 shadow-2xl space-y-5">
-        <div class="text-center space-y-1">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Alight Motion v3 Activation
-          </div>
-          <h3 class="text-xl font-extrabold text-white">Aktivasi Akun Premium</h3>
-          <p class="text-xs text-slate-400">Proses otomatis magic link & verifikasi akun</p>
-        </div>
-
-        <!-- Step 1 -->
-        <div class="space-y-2">
-          <label for="am-email" class="block text-xs font-semibold text-slate-300">1. Alamat Email Alight Motion</label>
-          <input type="email" id="am-email" placeholder="nama@gmail.com" 
-            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500">
-          <button onclick="requestMagicLink()" id="btn-magic" 
-            class="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-slate-950 font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/10">
-            Kirim Magic Link
-          </button>
-        </div>
-
-        <!-- Step 2 -->
-        <div class="space-y-2 pt-3 border-t border-slate-800/80">
-          <label for="am-link" class="block text-xs font-semibold text-slate-300">2. URL Link Verifikasi (Salin dari Email)</label>
-          <input type="url" id="am-link" placeholder="https://alight-creative.firebaseapp.com/__/auth/..." 
-            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500">
-          <button onclick="verifyLink()" id="btn-verif" 
-            class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-blue-600/10">
-            Verifikasi & Aktifkan Premium
-          </button>
-        </div>
+      <!-- Form Alight Motion -->
+      <section id="view-alight" class="max-w-xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+        <h3 class="text-xl font-extrabold text-white text-center">Aktivasi Alight Motion</h3>
+        <input type="email" id="am-email" placeholder="nama@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
+        <button onclick="requestMagicLink()" id="btn-magic" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">1. Kirim Magic Link</button>
+        <input type="url" id="am-link" placeholder="https://alight-creative.firebaseapp.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
+        <button onclick="verifyLink()" id="btn-verif" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">2. Verifikasi Premium</button>
       </section>
 
-      <!-- VIEW 2: ALL ENDPOINTS EXPLORER -->
-      <section id="view-explorer" class="hidden space-y-4">
-        <div id="endpoint-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div class="col-span-full text-center py-12 text-slate-500 text-sm font-mono">
-            Tekan tombol "Konek" di atas untuk mengambil daftar endpoint dari server...
-          </div>
-        </div>
+      <!-- Form AI Chat -->
+      <section id="view-ai" class="hidden max-w-xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+        <h3 class="text-lg font-bold text-white text-center">AI Assistant</h3>
+        <select id="ai-engine" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs">
+          <option value="/api/ai/chatgpt">ChatGPT</option>
+          <option value="/api/ai/gemini">Gemini AI</option>
+          <option value="/api/ai/deepseek">DeepSeek AI</option>
+        </select>
+        <textarea id="ai-prompt" rows="3" placeholder="Pesan..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs"></textarea>
+        <button onclick="executeAi()" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Kirim ke AI</button>
       </section>
 
-      <!-- SYSTEM CONSOLE / TERMINAL -->
-      <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 space-y-2 shadow-2xl">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Live Terminal Console</span>
-          </div>
-          <button onclick="clearLog()" class="text-[10px] text-slate-500 hover:text-slate-300 font-mono">Clear Log</button>
+      <!-- Form Stalker -->
+      <section id="view-stalk" class="hidden max-w-xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+        <h3 class="text-lg font-bold text-white text-center">Stalker & Search</h3>
+        <select id="stalk-endpoint" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs">
+          <option value="/api/stalk/tiktok">TikTok User</option>
+          <option value="/api/stalk/twitter">Twitter User</option>
+          <option value="/api/anime/v2/otakudesu/search">Search Anime</option>
+        </select>
+        <input type="text" id="stalk-query" placeholder="Username / Judul..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs">
+        <button onclick="executeStalk()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">Cari Data</button>
+      </section>
+
+      <!-- Form Maker -->
+      <section id="view-maker" class="hidden max-w-xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+        <h3 class="text-lg font-bold text-white text-center">Image & Logo Maker</h3>
+        <select id="maker-endpoint" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs">
+          <option value="/api/image/brat">Brat Generator</option>
+          <option value="/api/maker/balogo">Logo Generator</option>
+        </select>
+        <input type="text" id="maker-text" placeholder="Teks Gambar..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs">
+        <button onclick="executeMaker()" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Generate</button>
+      </section>
+
+      <!-- Explorer View -->
+      <section id="view-explorer" class="hidden">
+        <div id="endpoint-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      </section>
+
+      <!-- Terminal -->
+      <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 space-y-2">
+        <div class="flex justify-between border-b border-slate-800 pb-2">
+          <span class="text-[11px] font-mono text-slate-400">Live Terminal Console</span>
+          <button onclick="clearLog()" class="text-[10px] text-slate-500">Clear Log</button>
         </div>
-        
-        <div id="console-log" class="font-mono text-xs text-emerald-400 min-h-[120px] max-h-[180px] overflow-y-auto space-y-1 pt-1 leading-relaxed">
-          <p class="text-slate-500">[System Ready] Pilih fitur di atas atau hubungkan Base URL untuk memulai...</p>
-        </div>
+        <div id="console-log" class="font-mono text-xs text-emerald-400 min-h-[120px] max-h-[180px] overflow-y-auto"></div>
       </div>
-
     </main>
-
-    <footer class="border-t border-slate-800/80 py-4 text-center text-[11px] text-slate-500">
-      Developer API Dashboard &copy; ReiiOFC - Powering Next Generation Web Tools
-    </footer>
   </div>
-
-  <!-- SCRIPT UTAMA -->
-  <script>
-    // CREDENTIALS LOGIN SEDERHANA (Bisa kamu ubah sendiri di sini)
+    <script>
     const AUTH_USER = 'reii';
     const AUTH_PASS = 'reii123';
-
     let BASE_API = 'https://api.kyzznekoo.my.id';
     let docsData = null;
 
-    // --- SYSTEM LOGIN ---
     function handleLogin(e) {
       e.preventDefault();
-      const user = document.getElementById('login-user').value.trim();
-      const pass = document.getElementById('login-pass').value.trim();
-      const err = document.getElementById('login-error');
-
-      if (user === AUTH_USER && pass === AUTH_PASS) {
-        localStorage.setItem('reii_session', user);
-        err.classList.add('hidden');
+      if (document.getElementById('login-user').value.trim() === AUTH_USER && document.getElementById('login-pass').value.trim() === AUTH_PASS) {
+        localStorage.setItem('reii_session', AUTH_USER);
         checkSession();
       } else {
-        err.classList.remove('hidden');
+        document.getElementById('login-error').classList.remove('hidden');
       }
     }
 
-    function handleLogout() {
-      localStorage.removeItem('reii_session');
-      checkSession();
-    }
+    function handleLogout() { localStorage.removeItem('reii_session'); checkSession(); }
 
     function checkSession() {
-      const session = localStorage.getItem('reii_session');
-      const loginScreen = document.getElementById('login-screen');
-      const mainDashboard = document.getElementById('main-dashboard');
-      const userDisplay = document.getElementById('user-display');
-
-      if (session) {
-        loginScreen.classList.add('hidden');
-        mainDashboard.classList.remove('hidden');
-        userDisplay.textContent = session;
+      if (localStorage.getItem('reii_session')) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('main-dashboard').classList.remove('hidden');
       } else {
-        loginScreen.classList.remove('hidden');
-        mainDashboard.classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('main-dashboard').classList.add('hidden');
       }
     }
 
-    // --- SYSTEM LOGGING ---
     function log(msg, type = 'info') {
       const consoleLog = document.getElementById('console-log');
-      const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
-      let colorClass = 'text-emerald-400';
-      if (type === 'error') colorClass = 'text-rose-400';
-      if (type === 'warn') colorClass = 'text-amber-400';
-
       const p = document.createElement('p');
-      p.className = `${colorClass} break-all`;
-      p.innerHTML = `<span class="text-slate-500">[${time}]</span> ${msg}`;
+      p.className = (type === 'error' ? 'text-rose-400' : 'text-emerald-400') + ' break-all';
+      p.innerHTML = `<span class="text-slate-500">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
       consoleLog.appendChild(p);
       consoleLog.scrollTop = consoleLog.scrollHeight;
     }
 
-    function clearLog() {
-      document.getElementById('console-log').innerHTML = '<p class="text-slate-500">[System Cleared]</p>';
-    }
+    function clearLog() { document.getElementById('console-log').innerHTML = ''; }
 
     function saveBaseUrl() {
-      const input = document.getElementById('base-url-input').value.trim();
-      if (!input) return;
-      BASE_API = input.replace(/\/+$/, '');
+      BASE_API = document.getElementById('base-url-input').value.trim().replace(/\/+$/, '');
       localStorage.setItem('reii_base_url', BASE_API);
       log(`Base URL diubah ke: ${BASE_API}`);
-      fetchApiDocs();
     }
 
     function switchTab(tab) {
-      const vAlight = document.getElementById('view-alight');
-      const vExplorer = document.getElementById('view-explorer');
-      const btnAlight = document.getElementById('tab-alight');
-      const btnExplorer = document.getElementById('tab-explorer');
-
-      if (tab === 'alight') {
-        vAlight.classList.remove('hidden');
-        vExplorer.classList.add('hidden');
-        btnAlight.className = "px-4 py-2 rounded-lg text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition";
-        btnExplorer.className = "px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
-      } else {
-        vAlight.classList.add('hidden');
-        vExplorer.classList.remove('hidden');
-        btnExplorer.className = "px-4 py-2 rounded-lg text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition";
-        btnAlight.className = "px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
-        if (!docsData) fetchApiDocs();
-      }
+      ['alight', 'ai', 'stalk', 'maker', 'explorer'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+      if (tab === 'explorer' && !docsData) fetchApiDocs();
     }
 
-    async function fetchApiDocs() {
-      log(`Mencoba mengambil dokumentasi dari: ${BASE_API}/api/docs ...`);
+    async function callApi(endpoint) {
+      log(`GET: ${BASE_API}${endpoint}`);
       try {
-        let response;
-        const targetUrl = `${BASE_API}/api/docs`;
-        try {
-          response = await fetch(targetUrl);
-        } catch (e) {
-          log('Kena CORS, mencoba via Proxy...', 'warn');
-          response = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
-        }
+        let res = await fetch(`${BASE_API}${endpoint}`).catch(() => fetch(`https://corsproxy.io/?${encodeURIComponent(BASE_API + endpoint)}`));
+        let json = await res.json();
+        log(`RESPONSE:\n` + JSON.stringify(json, null, 2));
+      } catch (err) { log(`ERROR: ${err.message}`, 'error'); }
+    }
 
-        docsData = await response.json();
-        log('Dokumentasi API berhasil dimuat!', 'info');
+    function executeAi() { callApi(`${document.getElementById('ai-engine').value}?text=${encodeURIComponent(document.getElementById('ai-prompt').value)}`); }
+    function executeStalk() { callApi(`${document.getElementById('stalk-endpoint').value}?q=${encodeURIComponent(document.getElementById('stalk-query').value)}`); }
+    function executeMaker() { callApi(`${document.getElementById('maker-endpoint').value}?text=${encodeURIComponent(document.getElementById('maker-text').value)}`); }
+
+    async function fetchApiDocs() {
+      try {
+        let res = await fetch(`${BASE_API}/api/docs`).catch(() => fetch(`https://corsproxy.io/?${encodeURIComponent(BASE_API + '/api/docs')}`));
+        docsData = await res.json();
         renderExplorer(docsData);
-      } catch (err) {
-        log(`Gagal memuat /api/docs: ${err.message}`, 'error');
-      }
+      } catch (err) { log(`Gagal memuat docs: ${err.message}`, 'error'); }
     }
 
     function renderExplorer(data) {
       const grid = document.getElementById('endpoint-grid');
       grid.innerHTML = '';
-      const keys = Object.keys(data).filter(k => Array.isArray(data[k]));
-
-      keys.forEach(category => {
-        const endpoints = data[category];
-        const card = document.createElement('div');
-        card.className = "bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-3";
-
-        let endpointListHtml = endpoints.map(ep => 
-          `<div class="flex items-center justify-between text-xs font-mono bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800/80">
-            <span class="truncate text-slate-300">${ep}</span>
-            <button onclick="testEndpoint('${ep}')" class="text-[10px] bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-bold px-2 py-0.5 rounded transition ml-2">GET</button>
-          </div>`
-        ).join('');
-
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
-              <h4 class="font-bold text-sm text-slate-100 capitalize">${category}</h4>
-              <span class="text-[10px] font-mono text-slate-500">${endpoints.length} API</span>
-            </div>
-            <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-              ${endpointListHtml}
-            </div>
-          </div>
-        `;
+      Object.keys(data).filter(k => Array.isArray(data[k])).forEach(cat => {
+        let card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 rounded-xl p-3";
+        card.innerHTML = `<h4 class="font-bold text-xs text-emerald-400 capitalize mb-2">${cat}</h4>` + 
+          data[cat].map(ep => `<div class="text-[10px] font-mono text-slate-300 truncate cursor-pointer py-1" onclick="callApi('${ep}')">${ep}</div>`).join('');
         grid.appendChild(card);
       });
     }
 
-    async function testEndpoint(endpoint) {
-      log(`Eksekusi GET: ${BASE_API}${endpoint} ...`);
-      try {
-        const targetUrl = `${BASE_API}${endpoint}`;
-        let res;
-        try {
-          res = await fetch(targetUrl);
-        } catch (e) {
-          res = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
-        }
-        const json = await res.json();
-        log(`RESPONSE STATUS [${res.status}]:\n` + JSON.stringify(json, null, 2), 'info');
-      } catch (err) {
-        log(`EKSEKUSI GAGAL: ${err.message}`, 'error');
-      }
-    }
-
     async function requestMagicLink() {
-      const email = document.getElementById('am-email').value.trim();
-      if (!email) return log('Error: Masukkan email terlebih dahulu!', 'error');
-
-      const btn = document.getElementById('btn-magic');
-      btn.disabled = true;
-      btn.innerText = 'Mengirim...';
-      log(`Mengirim Magic Link ke: ${email}...`);
-
-      try {
-        const targetUrl = `${BASE_API}/api/alightmotion/v3/magic-link?email=${encodeURIComponent(email)}`;
-        let response;
-        try {
-          response = await fetch(targetUrl);
-        } catch (e) {
-          response = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
-        }
-        const data = await response.json();
-
-        if (data.status) {
-          log('BERHASIL: Magic link dikirim!', 'info');
-        } else {
-          log(`Gagal: ${data.message || 'Gagal mengirim magic link.'}`, 'error');
-        }
-      } catch (err) {
-        log(`Error: ${err.message}`, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerText = 'Kirim Magic Link';
-      }
+      let email = document.getElementById('am-email').value;
+      log(`Sending Magic Link to ${email}...`);
+      callApi(`/api/alightmotion/v3/magic-link?email=${encodeURIComponent(email)}`);
     }
 
     async function verifyLink() {
-      const email = document.getElementById('am-email').value.trim();
-      const verifyUrl = document.getElementById('am-link').value.trim();
-
-      if (!email || !verifyUrl) return log('Error: Email dan URL Link Wajib diisi!', 'error');
-
-      const btn = document.getElementById('btn-verif');
-      btn.disabled = true;
-      btn.innerText = 'Memverifikasi...';
-      log('Proses aktivasi premium...');
-
-      try {
-        const targetUrl = `${BASE_API}/api/alightmotion/v3/applyPremium?email=${encodeURIComponent(email)}&link=${encodeURIComponent(verifyUrl)}`;
-        let response;
-        try {
-          response = await fetch(targetUrl);
-        } catch (e) {
-          response = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
-        }
-        const data = await response.json();
-
-        if (data.status) {
-          log('BERHASIL! Status Premium Alight Motion telah Aktif.', 'info');
-        } else {
-          log(`Gagal Verifikasi: ${data.message || 'Link tidak valid.'}`, 'error');
-        }
-      } catch (err) {
-        log(`Error: ${err.message}`, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerText = 'Verifikasi & Aktifkan Premium';
-      }
+      let email = document.getElementById('am-email').value;
+      let url = document.getElementById('am-link').value;
+      log(`Verifying Premium...`);
+      callApi(`/api/alightmotion/v3/applyPremium?email=${encodeURIComponent(email)}&link=${encodeURIComponent(url)}`);
     }
 
-    // --- INISIALISASI ---
-    (function init() {
-      checkSession();
-      const savedUrl = localStorage.getItem('reii_base_url');
-      if (savedUrl) {
-        BASE_API = savedUrl;
-        document.getElementById('base-url-input').value = savedUrl;
-      } else {
-        document.getElementById('base-url-input').value = BASE_API;
-      }
-    })();
+    checkSession();
   </script>
 </body>
-  </html>
-  
+</html>
