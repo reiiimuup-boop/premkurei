@@ -63,7 +63,7 @@
     <!-- 2. AI CHAT -->
     <section id="view-ai" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
       <h3 class="font-bold text-center text-sm text-emerald-400">AI Assistant</h3>
-      <select id="ai-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
+      <select id="ai-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"><option>Loading...</option></select>
       <textarea id="ai-prompt" rows="3" placeholder="Pesan / Pertanyaan..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></textarea>
       <button onclick="runGenericApi('ai-ep', 'ai-prompt', ['text', 'prompt', 'query', 'q'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Kirim AI</button>
     </section>
@@ -71,7 +71,7 @@
     <!-- 3. STALKER & ANIME -->
     <section id="view-stalk" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
       <h3 class="font-bold text-center text-sm text-emerald-400">Stalker & Anime Search</h3>
-      <select id="stalk-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
+      <select id="stalk-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"><option>Loading...</option></select>
       <input type="text" id="stalk-q" placeholder="Username / ID / Judul Anime..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
       <button onclick="runGenericApi('stalk-ep', 'stalk-q', ['username', 'q', 'query', 'id', 'user'])" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg text-xs">Cari Data</button>
     </section>
@@ -79,7 +79,7 @@
     <!-- 4. MAKER & EDITOR -->
     <section id="view-maker" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
       <h3 class="font-bold text-center text-sm text-emerald-400">Image, Logo & Editor</h3>
-      <select id="maker-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
+      <select id="maker-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"><option>Loading...</option></select>
       <input type="text" id="maker-txt" placeholder="Teks / Nama..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
       <button onclick="runGenericApi('maker-ep', 'maker-txt', ['text', 'nama', 'prompt', 'q'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Generate</button>
     </section>
@@ -87,14 +87,14 @@
     <!-- 5. TOOLS -->
     <section id="view-tools" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
       <h3 class="font-bold text-center text-sm text-emerald-400">Tools & Utilities</h3>
-      <select id="tools-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
+      <select id="tools-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"><option>Loading...</option></select>
       <input type="text" id="tools-txt" placeholder="Parameter (Query / IP / Link)..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
       <button onclick="runGenericApi('tools-ep', 'tools-txt', ['q', 'url', 'ip', 'text', 'link'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Eksekusi Tool</button>
     </section>
 
     <!-- 6. ALL ENDPOINTS EXPLORER -->
     <section id="view-explorer" class="hidden grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div class="col-span-full text-center text-xs text-slate-500 py-6">Tekan "Konek" di atas untuk memuat daftar API...</div>
+      <div class="col-span-full text-center text-xs text-slate-500 py-6">Memuat seluruh daftar API...</div>
     </section>
 
     <!-- TERMINAL OUTPUT -->
@@ -118,11 +118,19 @@
       } else { document.getElementById('login-error').classList.remove('hidden'); }
     }
     function handleLogout() { localStorage.removeItem('session'); checkSession(); }
+    
     function checkSession() {
       const active = localStorage.getItem('session');
       document.getElementById('login-screen').className = active ? 'hidden' : 'fixed inset-0 bg-[#07090e] z-50 flex items-center justify-center p-4';
       document.getElementById('main-dashboard').className = active ? 'flex flex-col gap-4' : 'hidden';
-      if(active) loadDocs();
+      
+      // Mengisi nilai input Host URL
+      const savedUrl = localStorage.getItem('base_url');
+      if (savedUrl) BASE = savedUrl;
+      document.getElementById('base-url-input').value = BASE;
+
+      // OTOMATIS AMBIL DATA DOCS SAAT DASHBOARD TERBUKA
+      if (active) loadDocs();
     }
 
     function printLog(msg, isErr) {
@@ -175,15 +183,18 @@
     }
 
     async function loadDocs() {
+      printLog('Menghubungkan ke API server untuk memuat daftar menu...', false);
       try {
         let res = await fetch(BASE + '/api/docs').catch(() => fetch('https://corsproxy.io/?' + encodeURIComponent(BASE + '/api/docs')));
         let data = await res.json();
 
+        // POPULATE DROPDOWN AUTOMATICALLY
         populateSelect('ai-ep', [...(data.ai||[]), ...(data.generator||[])]);
         populateSelect('stalk-ep', [...(data.stalk||[]), ...(data.anime||[]), ...(data.shinigami||[])]);
         populateSelect('maker-ep', [...(data.maker||[]), ...(data.img||[]), ...(data.editor||[])]);
         populateSelect('tools-ep', [...(data.tools||[]), ...(data.upscale||[]), ...(data.asupan||[])]);
 
+        // RENDER EXPLORER GRID
         const grid = document.getElementById('view-explorer'); grid.innerHTML = '';
         Object.keys(data).filter(k => Array.isArray(data[k])).forEach(cat => {
           let card = document.createElement('div'); card.className = 'bg-slate-900 border border-slate-800 p-3 rounded-xl';
@@ -191,7 +202,11 @@
             data[cat].map(ep => `<div onclick="executeCall('${ep}')" class="text-[11px] text-slate-300 truncate cursor-pointer py-0.5">${ep}</div>`).join('');
           grid.appendChild(card);
         });
-      } catch(e) { printLog('Sistem Siap! Tekan "Konek" untuk sinkronisasi daftar menu.', false); }
+        
+        printLog('Sinkronisasi Sukses! Semua menu siap digunakan.', false);
+      } catch(e) { 
+        printLog('Gagal sinkronisasi menu otomatis dari server. Pastikan URL Server Benar.', true); 
+      }
     }
 
     function populateSelect(id, list) {
@@ -206,8 +221,8 @@
       });
     }
 
+    // Jalankan pengecekan saat pertama kali aplikasi dibuka
     checkSession();
   </script>
 </body>
-  </html>
-  
+</html>
