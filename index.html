@@ -5,224 +5,209 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReiiOFC - Multi-Purpose API Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], mono: ['Fira Code', 'monospace'] } } } }
-  </script>
   <style>
-    body { background-color: #07090e; background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%); }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    body { background: #07090e; color: #f1f5f9; font-family: sans-serif; }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #10b981; }
   </style>
 </head>
-<body class="min-h-screen text-slate-100 flex flex-col font-sans antialiased">
+<body class="min-h-screen flex flex-col p-3">
 
-  <div id="login-screen" class="fixed inset-0 z-50 bg-[#07090e] flex items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-slate-900/90 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 shadow-2xl space-y-5">
-      <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold font-mono text-xl mx-auto">&gt;_</div>
-        <h2 class="text-2xl font-extrabold text-white">Login Hub API</h2>
-        <p class="text-xs text-slate-400">Masukkan lisensi untuk mengakses dashboard</p>
-      </div>
-      <form onsubmit="handleLogin(event)" class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Username</label>
-          <input type="text" id="login-user" placeholder="Masukkan username" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-          <input type="password" id="login-pass" placeholder="••••••••" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-        </div>
-        <p id="login-error" class="text-xs text-rose-400 hidden text-center">Username atau Password salah!</p>
-        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">Masuk ke Dashboard</button>
-      </form>
-    </div>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="fixed inset-0 bg-[#07090e] z-50 flex items-center justify-center p-4">
+    <form onsubmit="handleLogin(event)" class="w-full max-w-xs bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+      <h2 class="text-xl font-bold text-emerald-400 text-center">&gt;_ Login Hub API</h2>
+      <input type="text" id="login-user" placeholder="Username" required class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs">
+      <input type="password" id="login-pass" placeholder="Password" required class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs">
+      <p id="login-error" class="text-xs text-rose-400 hidden text-center">User/Password salah!</p>
+      <button type="submit" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-xl text-xs">Masuk</button>
+    </form>
   </div>
 
-  <div id="main-dashboard" class="hidden min-h-screen flex flex-col">
-    <header class="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md sticky top-0 z-40">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold font-mono text-lg">&gt;_</div>
-          <div>
-            <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">ReiiOFC <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">v1.3.3</span></h1>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <input type="text" id="base-url-input" placeholder="https://api.kyzznekoo.my.id" class="bg-slate-950 text-xs font-mono text-slate-200 px-3 py-1.5 rounded-lg border border-slate-800 w-full md:w-60">
-          <button onclick="saveBaseUrl()" class="bg-emerald-500 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg">Konek</button>
-          <button onclick="handleLogout()" class="bg-rose-500/10 text-rose-400 text-xs font-bold px-3 py-1.5 rounded-lg">Keluar</button>
-        </div>
+  <!-- DASHBOARD UTAMA -->
+  <div id="main-dashboard" class="hidden flex-col gap-4">
+    <header class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+      <h1 class="text-lg font-bold text-emerald-400">ReiiOFC API Hub v1.3.3</h1>
+      <div class="flex gap-1 w-full sm:w-auto">
+        <input type="text" id="base-url-input" placeholder="https://api.kyzznekoo.my.id" class="bg-slate-950 border border-slate-800 p-1.5 rounded text-xs flex-grow font-mono">
+        <button onclick="saveBaseUrl()" class="bg-emerald-500 text-slate-950 font-bold px-2.5 rounded text-xs">Konek</button>
+        <button onclick="handleLogout()" class="bg-rose-500/20 text-rose-400 font-bold px-2.5 rounded text-xs">Keluar</button>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
-      <div class="flex flex-wrap gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
-        <button id="tab-alight" onclick="switchTab('alight')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 bg-emerald-500/10">⚡ Alight Motion</button>
-        <button id="tab-ai" onclick="switchTab('ai')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400">🤖 AI Chat</button>
-        <button id="tab-stalk" onclick="switchTab('stalk')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400">🔍 Stalker</button>
-        <button id="tab-maker" onclick="switchTab('maker')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400">🎨 Maker</button>
-        <button id="tab-explorer" onclick="switchTab('explorer')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400">📦 All Endpoints</button>
+    <!-- TABS MENU -->
+    <div class="flex flex-wrap gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+      <button onclick="switchTab('alight')" class="px-3 py-1.5 rounded bg-emerald-500/20 text-emerald-400">⚡ Alight Motion</button>
+      <button onclick="switchTab('ai')" class="px-3 py-1.5 rounded text-slate-400">🤖 AI Chat</button>
+      <button onclick="switchTab('stalk')" class="px-3 py-1.5 rounded text-slate-400">🔍 Stalker & Anime</button>
+      <button onclick="switchTab('maker')" class="px-3 py-1.5 rounded text-slate-400">🎨 Maker & Editor</button>
+      <button onclick="switchTab('tools')" class="px-3 py-1.5 rounded text-slate-400">🛠️ Tools</button>
+      <button onclick="switchTab('explorer')" class="px-3 py-1.5 rounded text-slate-400">📦 All API Explorer</button>
+    </div>
+
+    <!-- 1. ALIGHT MOTION -->
+    <section id="view-alight" class="max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+      <h3 class="font-bold text-center text-sm text-emerald-400">Aktivasi Alight Motion Premium</h3>
+      <div>
+        <label class="text-[10px] text-slate-400">1. Masukkan Email</label>
+        <input type="email" id="am-email" placeholder="nama@gmail.com" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg mt-1">
       </div>
-
-      <!-- Form Alight Motion -->
-      <section id="view-alight" class="max-w-xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
-        <h3 class="text-xl font-extrabold text-white text-center">Aktivasi Alight Motion</h3>
-        <input type="email" id="am-email" placeholder="nama@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
-        <button onclick="requestMagicLink()" id="btn-magic" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">1. Kirim Magic Link</button>
-        <input type="url" id="am-link" placeholder="https://alight-creative.firebaseapp.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
-        <button onclick="verifyLink()" id="btn-verif" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">2. Verifikasi Premium</button>
-      </section>
-
-      <!-- Form AI Chat -->
-      <section id="view-ai" class="hidden max-w-xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
-        <h3 class="text-lg font-bold text-white text-center">AI Assistant</h3>
-        <select id="ai-engine" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs">
-          <option value="/api/ai/chatgpt">ChatGPT</option>
-          <option value="/api/ai/gemini">Gemini AI</option>
-          <option value="/api/ai/deepseek">DeepSeek AI</option>
-        </select>
-        <textarea id="ai-prompt" rows="3" placeholder="Pesan..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs"></textarea>
-        <button onclick="executeAi()" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Kirim ke AI</button>
-      </section>
-
-      <!-- Form Stalker -->
-      <section id="view-stalk" class="hidden max-w-xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
-        <h3 class="text-lg font-bold text-white text-center">Stalker & Search</h3>
-        <select id="stalk-endpoint" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs">
-          <option value="/api/stalk/tiktok">TikTok User</option>
-          <option value="/api/stalk/twitter">Twitter User</option>
-          <option value="/api/anime/v2/otakudesu/search">Search Anime</option>
-        </select>
-        <input type="text" id="stalk-query" placeholder="Username / Judul..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs">
-        <button onclick="executeStalk()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">Cari Data</button>
-      </section>
-
-      <!-- Form Maker -->
-      <section id="view-maker" class="hidden max-w-xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
-        <h3 class="text-lg font-bold text-white text-center">Image & Logo Maker</h3>
-        <select id="maker-endpoint" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs">
-          <option value="/api/image/brat">Brat Generator</option>
-          <option value="/api/maker/balogo">Logo Generator</option>
-        </select>
-        <input type="text" id="maker-text" placeholder="Teks Gambar..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs">
-        <button onclick="executeMaker()" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Generate</button>
-      </section>
-
-      <!-- Explorer View -->
-      <section id="view-explorer" class="hidden">
-        <div id="endpoint-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-      </section>
-
-      <!-- Terminal -->
-      <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 space-y-2">
-        <div class="flex justify-between border-b border-slate-800 pb-2">
-          <span class="text-[11px] font-mono text-slate-400">Live Terminal Console</span>
-          <button onclick="clearLog()" class="text-[10px] text-slate-500">Clear Log</button>
-        </div>
-        <div id="console-log" class="font-mono text-xs text-emerald-400 min-h-[120px] max-h-[180px] overflow-y-auto"></div>
+      <button onclick="runAlightMagic()" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Kirim Magic Link</button>
+      <hr class="border-slate-800">
+      <div>
+        <label class="text-[10px] text-slate-400">2. Tempel Link dari Inbox/Spam Email</label>
+        <input type="url" id="am-link" placeholder="https://alight-creative.firebaseapp.com/__/auth/..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg mt-1">
       </div>
-    </main>
+      <button onclick="runAlightVerify()" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg text-xs">Verifikasi & Aktifkan Premium</button>
+    </section>
+
+    <!-- 2. AI CHAT -->
+    <section id="view-ai" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+      <h3 class="font-bold text-center text-sm text-emerald-400">AI Assistant</h3>
+      <select id="ai-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
+      <textarea id="ai-prompt" rows="3" placeholder="Pesan / Pertanyaan..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></textarea>
+      <button onclick="runGenericApi('ai-ep', 'ai-prompt', ['text', 'prompt', 'query', 'q'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Kirim AI</button>
+    </section>
+
+    <!-- 3. STALKER & ANIME -->
+    <section id="view-stalk" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+      <h3 class="font-bold text-center text-sm text-emerald-400">Stalker & Anime Search</h3>
+      <select id="stalk-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
+      <input type="text" id="stalk-q" placeholder="Username / ID / Judul Anime..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
+      <button onclick="runGenericApi('stalk-ep', 'stalk-q', ['username', 'q', 'query', 'id', 'user'])" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg text-xs">Cari Data</button>
+    </section>
+
+    <!-- 4. MAKER & EDITOR -->
+    <section id="view-maker" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+      <h3 class="font-bold text-center text-sm text-emerald-400">Image, Logo & Editor</h3>
+      <select id="maker-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
+      <input type="text" id="maker-txt" placeholder="Teks / Nama..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
+      <button onclick="runGenericApi('maker-ep', 'maker-txt', ['text', 'nama', 'prompt', 'q'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Generate</button>
+    </section>
+
+    <!-- 5. TOOLS -->
+    <section id="view-tools" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+      <h3 class="font-bold text-center text-sm text-emerald-400">Tools & Utilities</h3>
+      <select id="tools-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
+      <input type="text" id="tools-txt" placeholder="Parameter (Query / IP / Link)..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
+      <button onclick="runGenericApi('tools-ep', 'tools-txt', ['q', 'url', 'ip', 'text', 'link'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Eksekusi Tool</button>
+    </section>
+
+    <!-- 6. ALL ENDPOINTS EXPLORER -->
+    <section id="view-explorer" class="hidden grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="col-span-full text-center text-xs text-slate-500 py-6">Tekan "Konek" di atas untuk memuat daftar API...</div>
+    </section>
+
+    <!-- TERMINAL OUTPUT -->
+    <div class="bg-slate-950 border border-slate-800 p-3 rounded-2xl font-mono text-xs">
+      <div class="flex justify-between border-b border-slate-800 pb-1 mb-2 text-slate-500">
+        <span>Console Terminal Output</span>
+        <button onclick="document.getElementById('log').innerHTML=''" class="hover:text-slate-300">Clear</button>
+      </div>
+      <div id="log" class="text-emerald-400 min-h-[140px] max-h-[220px] overflow-y-auto space-y-1"></div>
+    </div>
   </div>
-    <script>
-    const AUTH_USER = 'reii';
-    const AUTH_PASS = 'reii123';
-    let BASE_API = 'https://api.kyzznekoo.my.id';
-    let docsData = null;
+
+  <script>
+    const USER = 'reii', PASS = 'reii123';
+    let BASE = 'https://api.kyzznekoo.my.id';
 
     function handleLogin(e) {
       e.preventDefault();
-      if (document.getElementById('login-user').value.trim() === AUTH_USER && document.getElementById('login-pass').value.trim() === AUTH_PASS) {
-        localStorage.setItem('reii_session', AUTH_USER);
-        checkSession();
-      } else {
-        document.getElementById('login-error').classList.remove('hidden');
-      }
+      if (document.getElementById('login-user').value === USER && document.getElementById('login-pass').value === PASS) {
+        localStorage.setItem('session', USER); checkSession();
+      } else { document.getElementById('login-error').classList.remove('hidden'); }
     }
-
-    function handleLogout() { localStorage.removeItem('reii_session'); checkSession(); }
-
+    function handleLogout() { localStorage.removeItem('session'); checkSession(); }
     function checkSession() {
-      if (localStorage.getItem('reii_session')) {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('main-dashboard').classList.remove('hidden');
-      } else {
-        document.getElementById('login-screen').classList.remove('hidden');
-        document.getElementById('main-dashboard').classList.add('hidden');
-      }
+      const active = localStorage.getItem('session');
+      document.getElementById('login-screen').className = active ? 'hidden' : 'fixed inset-0 bg-[#07090e] z-50 flex items-center justify-center p-4';
+      document.getElementById('main-dashboard').className = active ? 'flex flex-col gap-4' : 'hidden';
+      if(active) loadDocs();
     }
 
-    function log(msg, type = 'info') {
-      const consoleLog = document.getElementById('console-log');
-      const p = document.createElement('p');
-      p.className = (type === 'error' ? 'text-rose-400' : 'text-emerald-400') + ' break-all';
-      p.innerHTML = `<span class="text-slate-500">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
-      consoleLog.appendChild(p);
-      consoleLog.scrollTop = consoleLog.scrollHeight;
+    function printLog(msg, isErr) {
+      const l = document.getElementById('log'), p = document.createElement('p');
+      p.className = (isErr ? 'text-rose-400' : 'text-emerald-400') + ' break-all';
+      p.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      l.appendChild(p); l.scrollTop = l.scrollHeight;
     }
-
-    function clearLog() { document.getElementById('console-log').innerHTML = ''; }
 
     function saveBaseUrl() {
-      BASE_API = document.getElementById('base-url-input').value.trim().replace(/\/+$/, '');
-      localStorage.setItem('reii_base_url', BASE_API);
-      log(`Base URL diubah ke: ${BASE_API}`);
+      BASE = document.getElementById('base-url-input').value.trim().replace(/\/+$/, '');
+      localStorage.setItem('base_url', BASE); printLog('Base URL tersimpan: ' + BASE);
+      loadDocs();
     }
 
     function switchTab(tab) {
-      ['alight', 'ai', 'stalk', 'maker', 'explorer'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
-      document.getElementById(`view-${tab}`).classList.remove('hidden');
-      if (tab === 'explorer' && !docsData) fetchApiDocs();
+      ['alight','ai','stalk','maker','tools','explorer'].forEach(v => document.getElementById('view-'+v).classList.add('hidden'));
+      document.getElementById('view-'+tab).classList.remove('hidden');
     }
 
-    async function callApi(endpoint) {
-      log(`GET: ${BASE_API}${endpoint}`);
+    async function executeCall(fullPath) {
+      printLog('GET: ' + BASE + fullPath);
       try {
-        let res = await fetch(`${BASE_API}${endpoint}`).catch(() => fetch(`https://corsproxy.io/?${encodeURIComponent(BASE_API + endpoint)}`));
+        let res = await fetch(BASE + fullPath).catch(() => fetch('https://corsproxy.io/?' + encodeURIComponent(BASE + fullPath)));
         let json = await res.json();
-        log(`RESPONSE:\n` + JSON.stringify(json, null, 2));
-      } catch (err) { log(`ERROR: ${err.message}`, 'error'); }
+        printLog('RESULT:\n' + JSON.stringify(json, null, 2));
+      } catch (e) { printLog('ERROR: ' + e.message, true); }
     }
 
-    function executeAi() { callApi(`${document.getElementById('ai-engine').value}?text=${encodeURIComponent(document.getElementById('ai-prompt').value)}`); }
-    function executeStalk() { callApi(`${document.getElementById('stalk-endpoint').value}?q=${encodeURIComponent(document.getElementById('stalk-query').value)}`); }
-    function executeMaker() { callApi(`${document.getElementById('maker-endpoint').value}?text=${encodeURIComponent(document.getElementById('maker-text').value)}`); }
+    function runGenericApi(selectId, inputId, paramKeys) {
+      const ep = document.getElementById(selectId).value;
+      const val = document.getElementById(inputId).value.trim();
+      if (!val) return printLog('Error: Masukkan teks / parameter terlebih dahulu!', true);
+      
+      let queryParams = paramKeys.map(k => `${k}=${encodeURIComponent(val)}`).join('&');
+      executeCall(`${ep}?${queryParams}`);
+    }
 
-    async function fetchApiDocs() {
+    function runAlightMagic() {
+      const email = document.getElementById('am-email').value.trim();
+      if (!email) return printLog('Error: Masukkan Email dulu!', true);
+      executeCall(`/api/alightmotion/v3/magic-link?email=${encodeURIComponent(email)}`);
+    }
+
+    function runAlightVerify() {
+      const email = document.getElementById('am-email').value.trim();
+      const link = document.getElementById('am-link').value.trim();
+      if (!email || !link) return printLog('Error: Email dan Link Verifikasi Wajib Diisi!', true);
+      executeCall(`/api/alightmotion/v3/applyPremium?email=${encodeURIComponent(email)}&link=${encodeURIComponent(link)}`);
+    }
+
+    async function loadDocs() {
       try {
-        let res = await fetch(`${BASE_API}/api/docs`).catch(() => fetch(`https://corsproxy.io/?${encodeURIComponent(BASE_API + '/api/docs')}`));
-        docsData = await res.json();
-        renderExplorer(docsData);
-      } catch (err) { log(`Gagal memuat docs: ${err.message}`, 'error'); }
+        let res = await fetch(BASE + '/api/docs').catch(() => fetch('https://corsproxy.io/?' + encodeURIComponent(BASE + '/api/docs')));
+        let data = await res.json();
+
+        populateSelect('ai-ep', [...(data.ai||[]), ...(data.generator||[])]);
+        populateSelect('stalk-ep', [...(data.stalk||[]), ...(data.anime||[]), ...(data.shinigami||[])]);
+        populateSelect('maker-ep', [...(data.maker||[]), ...(data.img||[]), ...(data.editor||[])]);
+        populateSelect('tools-ep', [...(data.tools||[]), ...(data.upscale||[]), ...(data.asupan||[])]);
+
+        const grid = document.getElementById('view-explorer'); grid.innerHTML = '';
+        Object.keys(data).filter(k => Array.isArray(data[k])).forEach(cat => {
+          let card = document.createElement('div'); card.className = 'bg-slate-900 border border-slate-800 p-3 rounded-xl';
+          card.innerHTML = `<h4 class="font-bold text-emerald-400 capitalize mb-1">${cat}</h4>` + 
+            data[cat].map(ep => `<div onclick="executeCall('${ep}')" class="text-[11px] text-slate-300 truncate cursor-pointer py-0.5">${ep}</div>`).join('');
+          grid.appendChild(card);
+        });
+      } catch(e) { printLog('Sistem Siap! Tekan "Konek" untuk sinkronisasi daftar menu.', false); }
     }
 
-    function renderExplorer(data) {
-      const grid = document.getElementById('endpoint-grid');
-      grid.innerHTML = '';
-      Object.keys(data).filter(k => Array.isArray(data[k])).forEach(cat => {
-        let card = document.createElement('div');
-        card.className = "bg-slate-900 border border-slate-800 rounded-xl p-3";
-        card.innerHTML = `<h4 class="font-bold text-xs text-emerald-400 capitalize mb-2">${cat}</h4>` + 
-          data[cat].map(ep => `<div class="text-[10px] font-mono text-slate-300 truncate cursor-pointer py-1" onclick="callApi('${ep}')">${ep}</div>`).join('');
-        grid.appendChild(card);
+    function populateSelect(id, list) {
+      const s = document.getElementById(id);
+      if (!s) return;
+      s.innerHTML = '';
+      if (!list || list.length === 0) { s.innerHTML = '<option>Tidak ada endpoint</option>'; return; }
+      list.forEach(item => {
+        let opt = document.createElement('option');
+        opt.value = item; opt.innerText = item;
+        s.appendChild(opt);
       });
-    }
-
-    async function requestMagicLink() {
-      let email = document.getElementById('am-email').value;
-      log(`Sending Magic Link to ${email}...`);
-      callApi(`/api/alightmotion/v3/magic-link?email=${encodeURIComponent(email)}`);
-    }
-
-    async function verifyLink() {
-      let email = document.getElementById('am-email').value;
-      let url = document.getElementById('am-link').value;
-      log(`Verifying Premium...`);
-      callApi(`/api/alightmotion/v3/applyPremium?email=${encodeURIComponent(email)}&link=${encodeURIComponent(url)}`);
     }
 
     checkSession();
   </script>
 </body>
-</html>
+  </html>
+  
