@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>REII API HUB</title>
+  <style>
+    :root{--bg:#0f1720;--card:#18222e;--line:#2a3a4a;--text:#eef5fb;--muted:#94a3b8;--accent:#27a8e0}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,Arial;background:linear-gradient(135deg,#0b1118,#111b27);color:var(--text)}
+    .app{max-width:980px;margin:auto;padding:20px}.head{padding:22px 0}.head h1{margin:0;font-size:28px}.head p{color:var(--muted);margin:8px 0 0}
+    .card{background:rgba(24,34,46,.96);border:1px solid var(--line);border-radius:18px;padding:16px;margin:14px 0}
+    label{display:block;margin:10px 0 6px;font-size:13px;color:var(--muted)}
+    select,input,textarea,button{width:100%;border-radius:12px;font:inherit}
+    select,input,textarea{background:#0d141d;color:#fff;border:1px solid var(--line);padding:12px}
+    textarea{min-height:140px;resize:vertical;font-family:ui-monospace,monospace}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.method{font-weight:700;color:#7dd3fc}
+    button{margin-top:14px;padding:13px;border:0;background:var(--accent);color:#fff;font-weight:800;cursor:pointer}
+    button:disabled{opacity:.6}.status{margin-top:14px;color:var(--muted)}pre{white-space:pre-wrap;word-break:break-word;background:#080d13;border:1px solid var(--line);padding:14px;border-radius:12px;min-height:180px;overflow:auto}
+    .tag{display:inline-block;background:#163447;color:#7dd3fc;padding:5px 9px;border-radius:999px;font-size:12px;margin:4px}
+    @media(max-width:640px){.row{grid-template-columns:1fr}.app{padding:14px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="head">
+    <h1>REII API HUB</h1>
+    <p>Client API untuk endpoint yang diizinkan. API key tetap disimpan di Vercel Environment Variables.</p>
+  </header>
+
+  <section class="card">
+    <div class="row">
+      <div><label>Endpoint</label><select id="endpoint"></select></div>
+      <div><label>Method</label><input id="method" class="method" readonly></div>
+    </div>
+    <label>Parameter JSON</label>
+    <textarea id="params">{}</textarea>
+    <button id="send">KIRIM REQUEST</button>
+    <div class="status" id="status">Siap.</div>
+    <pre id="out">Response akan muncul di sini.</pre>
+  </section>
+
+  <section class="card">
+    <b>Endpoint yang tersedia di proyek ini</b>
+    <div id="tags"></div>
+  </section>
+</div>
+
+<script>
+const endpoints = [
+  // AI
+  ["GET","/api/ai/kyzzneko"],["GET","/api/ai/chatgpt"],["GET","/api/ai/gptanon"],
+  ["GET","/api/ai/copilot-think"],["GET","/api/ai/microsoft"],["GET","/api/ai/glm"],
+  ["GET","/api/ai/unlimited"],["GET","/api/ai/google"],["GET","/api/ai/qwen"],
+  ["GET","/api/ai/deepseek"],["GET","/api/ai/cici"],["GET","/api/ai/gemini"],
+  ["GET","/api/ai/gemini-lite"],["GET","/api/ai/vanice"],["GET","/api/ai/gpt5"],
+
+  // Anime
+  ["GET","/api/anime/quotes"],["GET","/api/anime/otakudesu"],
+  ["GET","/api/anime/animekita/anime-list"],["GET","/api/anime/animekita/movie"],
+  ["GET","/api/anime/animekita/schedule"],["GET","/api/anime/animekita/new"],
+  ["GET","/api/anime/animekita/genre"],["GET","/api/anime/animekita/search"],
+  ["GET","/api/anime/animekita/detail"],["GET","/api/anime/animekita/episode"],
+  ["GET","/api/anime/v2/anichin/search"],["GET","/api/anime/v2/anichin/popular"],
+  ["GET","/api/anime/v2/anichin/latest"],["GET","/api/anime/v2/anichin/detail"],
+  ["GET","/api/anime/v2/anichin/episode"],["GET","/api/anime/v2/anichin/download"],
+  ["GET","/api/anime/v2/otakudesu/ongoing"],["GET","/api/anime/v2/otakudesu/search"],
+  ["GET","/api/anime/v2/otakudesu/detail"],["GET","/api/anime/v2/otakudesu/download"],
+  ["GET","/api/anime/v2/oploverz/ongoing"],["GET","/api/anime/v2/oploverz/search"],
+  ["GET","/api/anime/v2/oploverz/episode"],["GET","/api/anime/v2/oploverz/download"],
+  ["GET","/api/anime/v2/komikindo/ongoing"],["GET","/api/anime/v2/komikindo/search"],
+  ["GET","/api/anime/v2/komikindo/detail"],["GET","/api/anime/v2/komikindo/download"],
+  ["GET","/api/anime/v2/samehadaku/latest"],["GET","/api/anime/v2/samehadaku/release"],
+  ["GET","/api/anime/v2/samehadaku/search"],["GET","/api/anime/v2/samehadaku/detail"],
+  ["GET","/api/anime/v2/samehadaku/episode"],["GET","/api/anime/v2/samehadaku/download"],
+
+  // Image / maker
+  ["GET","/api/image/uhd"],["GET","/api/image/brat"],["GET","/api/maker/balogo"],
+  ["GET","/api/image/codesnap"],["GET","/api/image/bratv"],["GET","/api/image/iqc"],
+  ["GET","/api/image/story-ig"],["GET","/api/image/sertifikat"],["GET","/api/image/quoteimg"],
+  ["GET","/api/canvas/fakewa"],["GET","/api/canvas/fakecall"],["GET","/api/canvas/fake-ovo"],
+
+  // General
+  ["GET","/api/about"],["GET","/api/cdn/crcdn"],["GET","/api/cdn/logsadm"],
+  ["GET","/api/admin/listapi"],["GET","/api/assets/key"],
+
+  // Safe utilities
+  ["GET","/api/tools/getpp"],["GET","/api/tools/ip"],["GET","/api/tools/osint"],
+  ["GET","/api/tools/sc_ml"],["GET","/api/tools/tmail/inbox"],
+  ["GET","/api/tools/tmail/v2/create"],["GET","/api/tools/tmail/v2/inbox"],
+  ["GET","/api/tools/rbg"],["GET","/api/tools/snapotp"],["GET","/api/tools/removevokal"],
+  ["GET","/api/tools/v2/ssweb"],["GET","/api/tools/ssweb"],["GET","/api/tools/tempmailv2"],
+  ["GET","/api/tools/obfuscate"],["GET","/api/tools/v2/qr"],
+
+  // AlightMotion basic download/init only
+  ["GET","/api/alightmotion/download"],["GET","/api/alightmotion/v4/init"],
+  ["GET","/api/alightmotion/v3/magic-link"],["GET","/api/alightmotion/v1/magic-link"],
+  ["GET","/api/alightmotion/v2/magic-link"]
+];
+
+const endpointSel=document.getElementById("endpoint");
+const method=document.getElementById("method");
+const tags=document.getElementById("tags");
+endpoints.forEach(([m,p])=>{
+  const o=document.createElement("option");o.value=p;o.dataset.method=m;o.textContent=`${m} ${p}`;endpointSel.appendChild(o);
+  const t=document.createElement("span");t.className="tag";t.textContent=`${m} ${p}`;tags.appendChild(t);
+});
+function sync(){method.value=endpointSel.selectedOptions[0].dataset.method}
+endpointSel.onchange=sync;sync();
+
+document.getElementById("send").onclick=async()=>{
+  const btn=document.getElementById("send"),out=document.getElementById("out"),status=document.getElementById("status");
+  let params={};
+  try{params=JSON.parse(document.getElementById("params").value||"{}")}catch(e){status.textContent="JSON parameter tidak valid.";return}
+  btn.disabled=true;status.textContent="Mengirim request...";
+  try{
+    const r=await fetch("/api/proxy",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({endpoint:endpointSel.value,method:method.value,params})
+    });
+    const text=await r.text();
+    try{out.textContent=JSON.stringify(JSON.parse(text),null,2)}catch{out.textContent=text}
+    status.textContent=`Selesai (${r.status}).`;
+  }catch(e){out.textContent=String(e);status.textContent="Request gagal."}
+  btn.disabled=false;
+};
+</script>
+</body>
+</html>
