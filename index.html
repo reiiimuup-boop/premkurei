@@ -29,7 +29,7 @@
       <h1 class="text-lg font-bold text-emerald-400">ReiiOFC API Hub v1.3.3</h1>
       <div class="flex gap-1 w-full sm:w-auto">
         <input type="text" id="base-url-input" placeholder="https://api.kyzznekoo.my.id" class="bg-slate-950 border border-slate-800 p-1.5 rounded text-xs flex-grow font-mono">
-        <button onclick="saveBaseUrl()" class="bg-emerald-500 text-slate-950 font-bold px-2.5 rounded text-xs">Konek</button>
+        <button onclick="saveBaseUrl()" class="bg-emerald-500 text-slate-950 font-bold px-2.5 rounded text-xs">Simpan Host</button>
         <button onclick="handleLogout()" class="bg-rose-500/20 text-rose-400 font-bold px-2.5 rounded text-xs">Keluar</button>
       </div>
     </header>
@@ -63,7 +63,7 @@
     <!-- 2. AI CHAT -->
     <section id="view-ai" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
       <h3 class="font-bold text-center text-sm text-emerald-400">AI Assistant</h3>
-      <select id="ai-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"><option>Loading...</option></select>
+      <select id="ai-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
       <textarea id="ai-prompt" rows="3" placeholder="Pesan / Pertanyaan..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></textarea>
       <button onclick="runGenericApi('ai-ep', 'ai-prompt', ['text', 'prompt', 'query', 'q'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Kirim AI</button>
     </section>
@@ -71,7 +71,7 @@
     <!-- 3. STALKER & ANIME -->
     <section id="view-stalk" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
       <h3 class="font-bold text-center text-sm text-emerald-400">Stalker & Anime Search</h3>
-      <select id="stalk-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"><option>Loading...</option></select>
+      <select id="stalk-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
       <input type="text" id="stalk-q" placeholder="Username / ID / Judul Anime..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
       <button onclick="runGenericApi('stalk-ep', 'stalk-q', ['username', 'q', 'query', 'id', 'user'])" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg text-xs">Cari Data</button>
     </section>
@@ -79,7 +79,7 @@
     <!-- 4. MAKER & EDITOR -->
     <section id="view-maker" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
       <h3 class="font-bold text-center text-sm text-emerald-400">Image, Logo & Editor</h3>
-      <select id="maker-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"><option>Loading...</option></select>
+      <select id="maker-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
       <input type="text" id="maker-txt" placeholder="Teks / Nama..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
       <button onclick="runGenericApi('maker-ep', 'maker-txt', ['text', 'nama', 'prompt', 'q'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Generate</button>
     </section>
@@ -87,15 +87,13 @@
     <!-- 5. TOOLS -->
     <section id="view-tools" class="hidden max-w-md mx-auto w-full bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
       <h3 class="font-bold text-center text-sm text-emerald-400">Tools & Utilities</h3>
-      <select id="tools-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"><option>Loading...</option></select>
+      <select id="tools-ep" class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg"></select>
       <input type="text" id="tools-txt" placeholder="Parameter (Query / IP / Link)..." class="w-full bg-slate-950 border border-slate-800 p-2 text-xs rounded-lg">
       <button onclick="runGenericApi('tools-ep', 'tools-txt', ['q', 'url', 'ip', 'text', 'link'])" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">Eksekusi Tool</button>
     </section>
 
     <!-- 6. ALL ENDPOINTS EXPLORER -->
-    <section id="view-explorer" class="hidden grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div class="col-span-full text-center text-xs text-slate-500 py-6">Memuat seluruh daftar API...</div>
-    </section>
+    <section id="view-explorer" class="hidden grid grid-cols-1 md:grid-cols-3 gap-3" id="explorer-grid"></section>
 
     <!-- TERMINAL OUTPUT -->
     <div class="bg-slate-950 border border-slate-800 p-3 rounded-2xl font-mono text-xs">
@@ -111,6 +109,20 @@
     const USER = 'reii', PASS = 'reii123';
     let BASE = 'https://api.kyzznekoo.my.id';
 
+    // ENDPOINT DATA DIRECTLY EMBEDDED
+    const API_LIST = {
+      ai: ["/api/ai/kyzzneko", "/api/ai/chatgpt", "/api/ai/gptanon", "/api/ai/copilot-think", "/api/ai/microsoft", "/api/ai/glm", "/api/ai/unlimited", "/api/ai/google", "/api/ai/qwen", "/api/ai/deepseek", "/api/ai/cici", "/api/ai/gemini", "/api/ai/gemini-lite", "/api/ai/vanice", "/api/ai/gpt5"],
+      generator: ["/api/ai/image/KyysGPT"],
+      stalk: ["/api/stalk/twitter", "/api/stalker/threads", "/api/stalk/YouTube", "/api/stalker/ml", "/api/stalker/gc", "/api/stalker/tele", "/api/stalker/ch", "/api/stalker/tiktok"],
+      anime: ["/api/anime/quotes", "/api/anime/otakudesu", "/api/anime/animekita/anime-list", "/api/anime/animekita/movie", "/api/anime/animekita/search", "/api/anime/v2/anichin/search", "/api/anime/v2/otakudesu/ongoing", "/api/anime/v2/otakudesu/search", "/api/anime/v2/oploverz/search", "/api/anime/v2/komikindo/search", "/api/anime/v2/samehadaku/search"],
+      shinigami: ["/api/shinigami/search", "/api/shinigami/detail", "/api/shinigami/view", "/api/shinigami/home"],
+      maker: ["/api/image/brat", "/api/maker/balogo", "/api/image/codesnap", "/api/image/bratv", "/api/image/iqc", "/api/image/story-ig", "/api/image/sertifikat"],
+      img: ["/api/img/nanobanana", "/api/img/qween", "/api/img/v2/fakeff", "/api/img/v2/nanobanana", "/api/img/toreal", "/api/img/v2/fakeml"],
+      editor: ["/api/editor/wanted", "/api/editor/wasted", "/api/editor/faceblur"],
+      tools: ["/api/image/uhd", "/api/tools/getpp", "/api/tools/ip", "/api/tools/osint", "/api/tools/sendmail", "/api/tools/spam-ngl", "/api/tools/tmpmail/create", "/api/tools/rbg", "/api/tools/spamotp", "/api/tools/removevokal", "/api/tools/ssweb", "/api/tools/obfuscate", "/api/tools/v2/qr"],
+      asupan: ["/api/asupan/paptt", "/api/asupan/hentaiv", "/api/asupan/nsfw"]
+    };
+
     function handleLogin(e) {
       e.preventDefault();
       if (document.getElementById('login-user').value === USER && document.getElementById('login-pass').value === PASS) {
@@ -124,13 +136,11 @@
       document.getElementById('login-screen').className = active ? 'hidden' : 'fixed inset-0 bg-[#07090e] z-50 flex items-center justify-center p-4';
       document.getElementById('main-dashboard').className = active ? 'flex flex-col gap-4' : 'hidden';
       
-      // Mengisi nilai input Host URL
       const savedUrl = localStorage.getItem('base_url');
       if (savedUrl) BASE = savedUrl;
       document.getElementById('base-url-input').value = BASE;
 
-      // OTOMATIS AMBIL DATA DOCS SAAT DASHBOARD TERBUKA
-      if (active) loadDocs();
+      if (active) initMenu();
     }
 
     function printLog(msg, isErr) {
@@ -143,7 +153,6 @@
     function saveBaseUrl() {
       BASE = document.getElementById('base-url-input').value.trim().replace(/\/+$/, '');
       localStorage.setItem('base_url', BASE); printLog('Base URL tersimpan: ' + BASE);
-      loadDocs();
     }
 
     function switchTab(tab) {
@@ -182,38 +191,29 @@
       executeCall(`/api/alightmotion/v3/applyPremium?email=${encodeURIComponent(email)}&link=${encodeURIComponent(link)}`);
     }
 
-    async function loadDocs() {
-      printLog('Menghubungkan ke API server untuk memuat daftar menu...', false);
-      try {
-        let res = await fetch(BASE + '/api/docs').catch(() => fetch('https://corsproxy.io/?' + encodeURIComponent(BASE + '/api/docs')));
-        let data = await res.json();
+    function initMenu() {
+      // POPULATE ALL SELECT DROPDOWNS DIRECTLY
+      populateSelect('ai-ep', [...API_LIST.ai, ...API_LIST.generator]);
+      populateSelect('stalk-ep', [...API_LIST.stalk, ...API_LIST.anime, ...API_LIST.shinigami]);
+      populateSelect('maker-ep', [...API_LIST.maker, ...API_LIST.img, ...API_LIST.editor]);
+      populateSelect('tools-ep', [...API_LIST.tools, ...API_LIST.asupan]);
 
-        // POPULATE DROPDOWN AUTOMATICALLY
-        populateSelect('ai-ep', [...(data.ai||[]), ...(data.generator||[])]);
-        populateSelect('stalk-ep', [...(data.stalk||[]), ...(data.anime||[]), ...(data.shinigami||[])]);
-        populateSelect('maker-ep', [...(data.maker||[]), ...(data.img||[]), ...(data.editor||[])]);
-        populateSelect('tools-ep', [...(data.tools||[]), ...(data.upscale||[]), ...(data.asupan||[])]);
-
-        // RENDER EXPLORER GRID
-        const grid = document.getElementById('view-explorer'); grid.innerHTML = '';
-        Object.keys(data).filter(k => Array.isArray(data[k])).forEach(cat => {
-          let card = document.createElement('div'); card.className = 'bg-slate-900 border border-slate-800 p-3 rounded-xl';
-          card.innerHTML = `<h4 class="font-bold text-emerald-400 capitalize mb-1">${cat}</h4>` + 
-            data[cat].map(ep => `<div onclick="executeCall('${ep}')" class="text-[11px] text-slate-300 truncate cursor-pointer py-0.5">${ep}</div>`).join('');
-          grid.appendChild(card);
-        });
-        
-        printLog('Sinkronisasi Sukses! Semua menu siap digunakan.', false);
-      } catch(e) { 
-        printLog('Gagal sinkronisasi menu otomatis dari server. Pastikan URL Server Benar.', true); 
-      }
+      // RENDER EXPLORER GRID
+      const grid = document.getElementById('view-explorer'); grid.innerHTML = '';
+      Object.keys(API_LIST).forEach(cat => {
+        let card = document.createElement('div'); card.className = 'bg-slate-900 border border-slate-800 p-3 rounded-xl';
+        card.innerHTML = `<h4 class="font-bold text-emerald-400 capitalize mb-1">${cat}</h4>` + 
+          API_LIST[cat].map(ep => `<div onclick="executeCall('${ep}')" class="text-[11px] text-slate-300 truncate cursor-pointer py-0.5">${ep}</div>`).join('');
+        grid.appendChild(card);
+      });
+      
+      printLog('Sistem Siap! Semua endpoint berhasil dimuat.', false);
     }
 
     function populateSelect(id, list) {
       const s = document.getElementById(id);
       if (!s) return;
       s.innerHTML = '';
-      if (!list || list.length === 0) { s.innerHTML = '<option>Tidak ada endpoint</option>'; return; }
       list.forEach(item => {
         let opt = document.createElement('option');
         opt.value = item; opt.innerText = item;
@@ -221,7 +221,6 @@
       });
     }
 
-    // Jalankan pengecekan saat pertama kali aplikasi dibuka
     checkSession();
   </script>
 </body>
